@@ -13,7 +13,13 @@ from pathlib import Path
 from google.adk import Agent
 
 from app.agent.instruction import build_system_instruction
-from app.agent.tools import make_query_knowledge_base_tool, start_sprint
+from app.agent.tools import (
+    make_query_knowledge_base_tool,
+    reverse_roles,
+    start_sprint,
+    start_whisper_drill,
+    teach_interviewing_technique,
+)
 from app.retrieval.gemini_embedding_function import GeminiEmbeddingFunction
 from app.scripts.warmup import warm_up
 
@@ -39,7 +45,7 @@ def _load_outline() -> str:
 
 
 def build_root_agent() -> Agent:
-    tools = [start_sprint]
+    tools = [start_sprint, reverse_roles, teach_interviewing_technique, start_whisper_drill]
     try:
         warm = warm_up(CHROMA_PATH, COLLECTION_NAME, BM25_PICKLE_PATH, embedding_function=GeminiEmbeddingFunction())
         bm25_ids = json.loads(BM25_IDS_PATH.read_text()) if BM25_IDS_PATH.exists() else []
