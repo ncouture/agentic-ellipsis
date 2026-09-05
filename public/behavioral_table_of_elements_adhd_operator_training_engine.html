@@ -1,0 +1,2784 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Behavioral Table of Elements - ADHD Operator Training Engine</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            tactical: {
+              950: '#06090e',
+              900: '#0b111a',
+              850: '#0f1724',
+              800: '#152132',
+              700: '#1d2e45',
+              600: '#273e5d',
+              500: '#35537d',
+            }
+          },
+          animation: {
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'scanline': 'scanline 8s linear infinite',
+            'radar-sweep': 'radar 3s linear infinite',
+          },
+          keyframes: {
+            scanline: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(1000%)' }
+            },
+            radar: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #06090e;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b111a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1d2e45;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+    .hud-glow-cyan {
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    }
+    .hud-glow-emerald {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+    .hud-glow-rose {
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.25);
+    }
+    .crt-grid {
+      background-size: 20px 20px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-tactical-950 text-slate-100 flex flex-col antialiased crt-grid">
+
+  <header class="sticky top-0 z-40 bg-tactical-900/95 backdrop-blur-md border-b border-tactical-700/80 px-4 py-2.5 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Rank Banner -->
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-lg bg-emerald-950 border border-emerald-500/60 flex items-center justify-center text-emerald-400 font-mono font-black text-sm shadow">
+          BTOE
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-mono font-bold text-xs sm:text-sm tracking-wider uppercase text-emerald-300">
+              ADHD Operator Live Interrogation Hub
+            </h1>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-tactical-800 text-cyan-300 font-mono border border-cyan-700/60 font-bold">v4.1-GEMINI-3.1-TTS</span>
+          </div>
+          <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-400">
+            <span>RANK:</span>
+            <span id="hud-user-rank" class="text-amber-400 font-bold">Rank 1: Spotter</span>
+            <span class="text-slate-600">|</span>
+            <span>LVL <strong id="hud-user-level" class="text-emerald-400">1</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- XP Progress Tracker -->
+        <div class="hidden sm:flex flex-col w-36 sm:w-44">
+          <div class="flex justify-between text-[10px] font-mono text-slate-400 mb-1">
+            <span>XP PROGRESS</span>
+            <span id="hud-xp-ratio" class="text-cyan-300 font-bold">0 / 100</span>
+          </div>
+          <div class="w-full bg-tactical-800 rounded-full h-2 overflow-hidden border border-tactical-700">
+            <div id="hud-xp-fill" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <!-- 15/3 Somatic Sprint Timer -->
+        <div class="flex items-center space-x-2 bg-tactical-850 border border-emerald-500/30 rounded-lg px-3 py-1.5 font-mono text-xs shadow">
+          <div class="flex flex-col text-left">
+            <span id="sprint-phase-label" class="text-[9px] uppercase font-bold text-emerald-400 leading-none">15M SPRINT</span>
+            <span id="sprint-timer-display" class="font-bold text-sm tracking-wider text-slate-100">15:00</span>
+          </div>
+          <div class="flex items-center space-x-1 pl-1">
+            <button id="sprint-toggle-btn" class="p-1.5 rounded bg-tactical-700 hover:bg-emerald-600 text-white transition text-xs" title="Start/Pause Timer">
+              <i class="fa-solid fa-play" id="sprint-play-icon"></i>
+            </button>
+            <button id="sprint-reset-btn" class="p-1.5 rounded bg-tactical-700 hover:bg-tactical-600 text-slate-300 transition text-xs" title="Reset Timer">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            <button id="sprint-test-btn" class="px-1.5 py-1 rounded bg-amber-900/60 hover:bg-amber-800 text-[10px] text-amber-300 transition border border-amber-600/40" title="Trigger 10s Demo">
+              10s
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal Launcher & Mute Toggle -->
+        <div class="flex items-center space-x-1.5">
+          <button id="open-terminal-btn" class="px-2.5 py-1.5 bg-tactical-800 hover:bg-tactical-700 text-cyan-300 rounded border border-tactical-600 font-mono text-xs flex items-center space-x-1 transition" title="Open AI Operator Terminal">
+            <i class="fa-solid fa-terminal"></i>
+            <span class="hidden md:inline">COPILOT</span>
+          </button>
+          <button id="global-mute-btn" class="p-1.5 bg-tactical-800 hover:bg-tactical-700 text-slate-300 rounded border border-tactical-600 text-xs transition" title="Mute/Unmute Audio">
+            <i class="fa-solid fa-volume-high" id="global-mute-icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="bg-tactical-900 border-b border-tactical-800 px-4 py-2">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0 text-xs font-mono">
+      <button class="nav-tab-btn active px-3 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/60 font-bold transition flex items-center space-x-1.5 whitespace-nowrap" data-tab="view-sandbox">
+        <span>🕵️‍♂️ Live Interrogation Sandbox</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg bg-tactical-850 hover:bg-tactical-800 text-slate-400 hover:text-slate-200 border border-tactical-700 transition flex items-center space-x-1.5 whitespace-nowrap" data-tab="view-deception">
+        <span>🎯 Game A: 11-Pt Deception Blitz</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg bg-tactical-850 hover:bg-tactical-800 text-slate-400 hover:text-slate-200 border border-tactical-700 transition flex items-center space-x-1.5 whitespace-nowrap" data-tab="view-ellipsis">
+        <span>✂️ Game B: Ellipsis Dialogue</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg bg-tactical-850 hover:bg-tactical-800 text-slate-400 hover:text-slate-200 border border-tactical-700 transition flex items-center space-x-1.5 whitespace-nowrap" data-tab="view-ironchef">
+        <span>🎲 Game C: Iron Chef 60s Drill</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg bg-tactical-850 hover:bg-tactical-800 text-slate-400 hover:text-slate-200 border border-tactical-700 transition flex items-center space-x-1.5 whitespace-nowrap" data-tab="view-matrix">
+        <span>🧬 BTOE Reference Matrix</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg bg-tactical-850 hover:bg-tactical-800 text-slate-400 hover:text-slate-200 border border-tactical-700 transition flex items-center space-x-1.5 whitespace-nowrap" data-tab="view-vision">
+        <span>👁️ Vision Scanner Studio</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 flex flex-col gap-6">
+
+    <!-- VIEW 1: LIVE INTERROGATION SANDBOX (DEFAULT ACTIVE VIEW) -->
+    <section id="view-sandbox" class="game-view-panel flex flex-col gap-6">
+      <div class="bg-tactical-900 border border-tactical-700 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+        
+        <div class="flex flex-wrap items-center justify-between border-b border-tactical-700/80 pb-3 gap-2">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div>
+              <h2 class="text-slate-100 font-mono font-bold text-sm sm:text-base flex items-center space-x-2">
+                <span>LIVE MULTI-TURN INTERROGATION SANDBOX</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-700/60 font-bold">VOICE STT ➔ GEMINI 3.1 FLASH TTS ➔ CCTV VIDEO</span>
+              </h2>
+              <p class="text-[11px] font-mono text-slate-400">Speak into mic or type. Every answer is synthesized to voice and animated into an articulated CCTV video depicting all bracketed nonverbal tells.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <select id="sandbox-persona-select" class="bg-tactical-800 border border-tactical-700 rounded px-2.5 py-1 text-slate-200 focus:outline-none focus:border-emerald-400">
+              <option value="cfo_embezzle">Arthur Pendelton (CFO - Deceptive)</option>
+              <option value="innocent_witness">Elena Rostova (Lab Tech - Truthful)</option>
+              <option value="courier_smuggler">Derrick Vance (Dock Dispatcher - Evasive)</option>
+            </select>
+            <button id="sandbox-reset-btn" class="px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-slate-300 rounded border border-tactical-700">
+              ↺ Reset
+            </button>
+            <button id="sandbox-report-btn" class="px-3 py-1 bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-600/60 rounded flex items-center space-x-1 font-bold">
+              <span>📑 Debrief</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          
+          <!-- Left Column: Interrogation Turn Feed & Voice Input -->
+          <div class="lg:col-span-6 flex flex-col gap-3">
+            <div id="sandbox-chat-feed" class="h-[430px] bg-tactical-950 p-4 rounded-xl border border-tactical-800 overflow-y-auto flex flex-col gap-3 text-xs font-mono">
+              <!-- Chat turns populated dynamically -->
+            </div>
+
+            <!-- Interrogation Speech-to-Text Input Bar -->
+            <div class="p-3 bg-tactical-950 rounded-xl border border-tactical-800 flex flex-col gap-2">
+              <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                  <span class="text-cyan-300 font-bold">INVESTIGATOR VOICE / TEXT INPUT</span>
+                </span>
+                <span id="sandbox-stt-status" class="text-slate-500">Mic Ready</span>
+              </div>
+              <div class="flex gap-2">
+                <button id="sandbox-mic-btn" class="px-3.5 py-2 bg-tactical-800 hover:bg-cyan-700 text-cyan-200 rounded-lg font-mono text-xs transition flex items-center space-x-1.5 border border-tactical-700" title="Click to Speak (Speech-to-Text)">
+                  <span id="sandbox-mic-icon">🎙️</span>
+                  <span id="sandbox-mic-label" class="font-bold">Speak</span>
+                </button>
+                <input type="text" id="sandbox-user-input" placeholder="Speak query or type interrogation probe..." class="flex-1 bg-tactical-900 border border-tactical-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-400">
+                <button id="sandbox-send-btn" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-mono font-bold text-xs transition whitespace-nowrap shadow">
+                  Ask ➔
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Articulated CCTV Monitor & DRS Gauge -->
+          <div class="lg:col-span-6 flex flex-col gap-3">
+            
+            <!-- Dedicated Live CCTV Interrogation Monitor -->
+            <div class="relative bg-black rounded-xl border-2 border-tactical-700 overflow-hidden shadow-2xl flex flex-col">
+              <div class="relative">
+                <canvas id="sandbox-video-canvas" width="640" height="360" class="w-full h-auto block"></canvas>
+                
+                <!-- CCTV Status Overlays -->
+                <div class="absolute top-2.5 left-2.5 font-mono text-[10px] text-emerald-400 bg-black/75 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <span id="sandbox-cam-label">REC [CAM-01 // LIVE INTERROGATION]</span>
+                </div>
+                <div class="absolute top-2.5 right-2.5 font-mono text-[10px] text-slate-400 bg-black/75 px-2 py-0.5 rounded border border-tactical-700" id="sandbox-cctv-timestamp">
+                  2026-09-04 // 00:00:00
+                </div>
+                
+                <!-- Action Bracket Overlay -->
+                <div id="sandbox-cctv-action-indicator" class="absolute bottom-10 left-2 right-2 text-center pointer-events-none">
+                  <span class="bg-black/85 text-amber-300 border border-amber-500/50 px-3 py-1 rounded font-mono text-xs font-bold inline-block shadow-lg transition-opacity">
+                    ACTIVE TELL: AWAITING QUERY
+                  </span>
+                </div>
+                
+                <!-- Synchronized Dialogue Subtitles -->
+                <div id="sandbox-cctv-subtitles" class="absolute bottom-2 left-2 right-2 text-center pointer-events-none">
+                  <span class="bg-black/85 text-slate-200 px-3 py-0.5 rounded font-mono text-xs inline-block max-w-full truncate border border-slate-700">
+                    "Awaiting investigator question..."
+                  </span>
+                </div>
+              </div>
+
+              <!-- CCTV Video Controls -->
+              <div class="p-2.5 bg-tactical-950 border-t border-tactical-800 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
+                <div class="flex items-center space-x-1.5">
+                  <button id="sandbox-video-replay-btn" class="px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-slate-200 rounded text-xs transition flex items-center space-x-1">
+                    <span>↺ Replay</span>
+                  </button>
+                  <button id="sandbox-export-webm-btn" class="px-2.5 py-1 bg-cyan-700 hover:bg-cyan-600 text-white font-bold rounded text-xs transition flex items-center space-x-1">
+                    <span>📥 Export .webm</span>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-slate-400 text-[10px]">FILTER:</span>
+                  <select id="sandbox-cctv-filter" class="bg-tactical-900 border border-tactical-700 rounded px-2 py-0.5 text-[11px] text-cyan-300 focus:outline-none">
+                    <option value="cctv">CCTV Green</option>
+                    <option value="noir">Monochrome Noir</option>
+                    <option value="thermal">Thermal Heat Stress</option>
+                  </select>
+                  <span id="sandbox-video-time" class="text-cyan-400 font-bold">00:00</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-tactical-950 p-4 rounded-xl border border-tactical-800 flex flex-col gap-3">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-slate-400 font-bold uppercase">SESSION DECEPTION RATING GAUGE</span>
+                <span id="sandbox-drs-display" class="px-2 py-0.5 rounded bg-tactical-800 text-amber-400 font-bold border border-tactical-700">0.0 / 11.0</span>
+              </div>
+              <div class="w-full bg-tactical-900 rounded-full h-3 overflow-hidden border border-tactical-700 relative">
+                <div id="sandbox-drs-meter-fill" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 w-0 transition-all duration-300"></div>
+                <div class="absolute top-0 bottom-0 left-[55%] w-0.5 bg-rose-400" title="11.0 Threshold"></div>
+              </div>
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>0.0 Truth</span>
+                <span class="text-rose-400 font-bold">11.0 Threshold</span>
+                <span>20.0+</span>
+              </div>
+              
+              <div class="border-t border-tactical-800 pt-2 flex flex-col gap-1.5">
+                <span class="text-[10px] font-mono text-slate-400 font-bold uppercase">OBSERVED BEHAVIORAL TELLS LOG:</span>
+                <div id="sandbox-cues-history" class="text-[11px] font-mono text-slate-300 flex flex-col gap-1 overflow-y-auto max-h-28">
+                  <p class="text-slate-500">Speak or enter a question to start logging observable tells.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-deception" class="game-view-panel hidden flex flex-col gap-6">
+      <div class="bg-tactical-900 border border-tactical-700 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+        
+        <div class="flex flex-wrap items-center justify-between border-b border-tactical-700/80 pb-3 gap-2">
+          <div class="flex items-center space-x-2">
+            <span class="px-2.5 py-1 rounded bg-amber-950 border border-amber-700/60 text-amber-300 font-mono font-bold text-xs uppercase" id="case-id">
+              CASE #704-B
+            </span>
+            <h2 class="text-slate-100 font-mono font-bold text-sm sm:text-base" id="case-title">
+              Corporate CFO Embezzlement Audit (Blitz Turn)
+            </h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="next-deception-scenario" class="px-3 py-1.5 bg-tactical-800 hover:bg-tactical-700 text-slate-200 border border-tactical-600 rounded text-xs font-mono transition">
+              Next Case ➔
+            </button>
+            <button id="ai-forge-deception-btn" class="px-3 py-1.5 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-600/60 rounded text-xs font-mono transition flex items-center space-x-1 font-bold">
+              <span>⚡ AI Forge</span>
+            </button>
+            <button id="ai-grounded-search-btn" class="px-3 py-1.5 bg-blue-900/60 hover:bg-blue-800 text-blue-200 border border-blue-600/60 rounded text-xs font-mono transition">
+              <span>🌐 Grounded Search</span>
+            </button>
+            <button id="bau-autopsy-dossier-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 rounded text-xs font-mono transition">
+              <span>📑 BAU Dossier</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Grounded Intelligence Hub Modal/Panel -->
+        <div id="grounded-sources-panel" class="hidden bg-tactical-950 border border-blue-500/40 rounded-lg p-4 text-xs font-mono flex flex-col gap-3">
+          <div class="flex justify-between items-center text-blue-400 font-bold">
+            <span class="flex items-center space-x-1.5">
+              <span>🌐</span>
+              <span>GOOGLE SEARCH GROUNDED INTELLIGENCE DOSSIER HUB</span>
+            </span>
+            <button id="close-grounded-panel" class="hover:text-slate-200">✕ Close</button>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <input type="text" id="grounded-custom-query" placeholder="Enter witness deposition or criminal case name..." class="flex-1 min-w-[240px] bg-tactical-900 border border-tactical-700 rounded px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-400">
+            <button id="grounded-exec-search-btn" class="px-3 py-1.5 bg-blue-700 hover:bg-blue-600 text-white rounded font-bold transition">
+              Search Web
+            </button>
+          </div>
+          <div id="grounded-search-results" class="bg-tactical-900 p-3 rounded border border-tactical-800 text-slate-300 max-h-48 overflow-y-auto">
+            Search live cases to view verified factual citations and inject real depositions directly into the training simulators.
+          </div>
+          <div id="grounded-docking-actions" class="hidden flex flex-wrap items-center gap-2 pt-2 border-t border-tactical-800">
+            <span class="text-[10px] font-bold text-slate-400">LOAD GROUNDED CASE INTO:</span>
+            <button id="dock-load-sandbox" class="px-2.5 py-1 bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-600/40 rounded text-[11px]">
+              🕵️‍♂️ Live Sandbox
+            </button>
+            <button id="dock-load-game-a" class="px-2.5 py-1 bg-amber-900/60 hover:bg-amber-800 text-amber-200 border border-amber-600/40 rounded text-[11px]">
+              🎯 Game A (Blitz)
+            </button>
+            <button id="dock-load-game-b" class="px-2.5 py-1 bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 border border-cyan-600/40 rounded text-[11px]">
+              ✂️ Game B (Ellipsis)
+            </button>
+            <button id="dock-load-game-c" class="px-2.5 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-600/40 rounded text-[11px]">
+              🎲 Game C (Iron Chef)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          
+          <!-- Left: Turn Speech Input & Transcript -->
+          <div class="lg:col-span-6 flex flex-col gap-3">
+            <div class="p-3 bg-tactical-950 rounded-lg border border-tactical-800">
+              <div class="text-[10px] font-mono font-bold text-cyan-400 mb-1 uppercase tracking-wide">INVESTIGATOR QUERY (VOICE OR TEXT):</div>
+              <div class="flex gap-2 mb-2">
+                <button id="deception-mic-btn" class="px-3 py-1.5 bg-tactical-800 hover:bg-cyan-700 text-cyan-200 rounded font-mono text-xs flex items-center space-x-1 border border-tactical-700">
+                  <span id="deception-mic-icon">🎙️</span>
+                  <span id="deception-mic-label">Speak</span>
+                </button>
+                <input type="text" id="deception-user-query-input" class="flex-1 bg-tactical-900 border border-tactical-700 rounded px-2.5 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-400" placeholder="Ask specific question or probe...">
+                <button id="deception-send-turn-btn" class="px-3 py-1.5 bg-amber-700 hover:bg-amber-600 text-white font-mono font-bold text-xs rounded transition">
+                  Probe ➔
+                </button>
+              </div>
+              <p id="case-question" class="text-xs text-slate-300 italic">"Did you authorize the second wire transfer of $240,000 to the offshore account on May 14th?"</p>
+            </div>
+
+            <div class="p-3 bg-tactical-950 rounded-lg border border-tactical-800">
+              <div class="flex justify-between items-center text-[10px] font-mono font-bold text-amber-400 mb-1 uppercase tracking-wide">
+                <span>SUBJECT SPOKEN RESPONSE & NONVERBAL TELLS:</span>
+                <button id="deception-replay-audio-btn" class="hover:text-amber-200 text-xs">🔊 Replay Audio</button>
+              </div>
+              <p id="case-transcript" class="text-xs sm:text-sm font-mono text-slate-200 leading-relaxed">
+                Look... [hesitates, pitch jumps upward] I have served this company honorably for twelve years. Would someone who dedicated their life to this firm do that? [clears throat, rubs back of neck while legs wrap tightly around chair legs].
+              </p>
+            </div>
+
+            <!-- Scoring Checklist -->
+            <div class="bg-tactical-950 p-3 rounded-lg border border-tactical-800 flex flex-col gap-2">
+              <div class="flex justify-between items-center text-xs font-mono text-slate-300">
+                <span class="font-bold uppercase">SCORE DETECTED BTOE CUES:</span>
+                <span id="drs-tally-badge" class="px-2 py-0.5 rounded bg-tactical-800 text-amber-400 font-bold border border-tactical-700">0.0 / 11.0</span>
+              </div>
+              <div id="interactive-element-tally-list" class="flex flex-col gap-1.5 max-h-40 overflow-y-auto">
+                <!-- Dynamically populated checklist -->
+              </div>
+              <div class="grid grid-cols-2 gap-2 font-mono text-xs font-bold pt-2 border-t border-tactical-800">
+                <button class="deception-verdict-btn p-2 rounded bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-600/50" data-verdict="truth">
+                  VERIFIED TRUTH (&lt;11.0)
+                </button>
+                <button class="deception-verdict-btn p-2 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-600/50" data-verdict="deceptive">
+                  DECEPTIVE (≥11.0)
+                </button>
+              </div>
+              <div id="deception-result-banner" class="hidden p-2.5 rounded font-mono text-xs"></div>
+            </div>
+          </div>
+
+          <!-- Right: Game A Dedicated Video Stage -->
+          <div class="lg:col-span-6 flex flex-col gap-2">
+            <div class="relative bg-black rounded-xl border-2 border-tactical-700 overflow-hidden shadow-2xl flex flex-col">
+              <canvas id="deception-video-canvas" width="640" height="360" class="w-full h-auto block"></canvas>
+              <div class="absolute top-2.5 left-2.5 font-mono text-[10px] text-emerald-400 bg-black/75 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>REC [CAM-02 // DECEPTION BLITZ]</span>
+              </div>
+              <div id="deception-cctv-action-indicator" class="absolute bottom-10 left-2 right-2 text-center pointer-events-none">
+                <span class="bg-black/85 text-amber-300 border border-amber-500/50 px-3 py-1 rounded font-mono text-xs font-bold inline-block">
+                  ACTIVE TELL: SYNCHRONIZING
+                </span>
+              </div>
+              <div id="deception-cctv-subtitles" class="absolute bottom-2 left-2 right-2 text-center pointer-events-none">
+                <span class="bg-black/85 text-slate-200 px-3 py-0.5 rounded font-mono text-xs inline-block max-w-full truncate border border-slate-700">
+                  "..."
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs font-mono text-slate-400 p-2 bg-tactical-950 rounded-lg border border-tactical-800">
+              <span id="deception-video-timer" class="font-bold text-amber-400">00:00 / 00:08</span>
+              <button id="deception-video-replay-btn" class="px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-slate-200 rounded text-xs transition">
+                ↺ Replay Video
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-ellipsis" class="game-view-panel hidden flex flex-col gap-6">
+      <div class="bg-tactical-900 border border-tactical-700 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+        
+        <div class="flex flex-wrap items-center justify-between border-b border-tactical-700/80 pb-3 gap-2">
+          <div>
+            <h2 class="text-slate-100 font-mono font-bold text-sm sm:text-base">
+              GAME B: LIVE ELLIPSIS INTERROGATION STRIPPER
+            </h2>
+            <p class="text-[11px] font-mono text-slate-400">Interrogate witness via STT. Witness answers with bloated speech; strip deadweight to lock focus.</p>
+          </div>
+          <button id="ai-generate-ellipsis-phrase-btn" class="px-3 py-1.5 bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 border border-cyan-600/60 rounded text-xs font-mono transition">
+            ⚡ Next Witness
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div class="lg:col-span-6 flex flex-col gap-3">
+            
+            <div class="p-3 bg-tactical-950 rounded-xl border border-tactical-800 flex flex-col gap-2">
+              <div class="text-[10px] font-mono font-bold text-cyan-400 uppercase">INVESTIGATOR QUERY (VOICE OR TEXT):</div>
+              <div class="flex gap-2">
+                <button id="ellipsis-mic-btn" class="px-3 py-1.5 bg-tactical-800 hover:bg-cyan-700 text-cyan-200 rounded font-mono text-xs flex items-center space-x-1 border border-tactical-700">
+                  <span id="ellipsis-mic-icon">🎙️</span>
+                  <span id="ellipsis-mic-label">Speak</span>
+                </button>
+                <input type="text" id="ellipsis-interrogate-input" class="flex-1 bg-tactical-900 border border-tactical-700 rounded px-2.5 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400" placeholder="Ask witness about whereabouts or details...">
+                <button id="ellipsis-send-query-btn" class="px-3 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-white font-mono font-bold text-xs rounded transition">
+                  Ask ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- Witness Spoken Raw Response -->
+            <div class="p-3 bg-tactical-950 rounded-xl border border-rose-500/40 flex flex-col gap-1.5">
+              <div class="flex justify-between items-center text-[10px] font-mono text-rose-400 font-bold uppercase">
+                <span>WITNESS SPOKEN RESPONSE (CLUNKY & BLOATED):</span>
+                <span id="ellipsis-raw-syllables" class="text-rose-300">23 Syllables</span>
+              </div>
+              <p id="ellipsis-raw-sentence" class="text-xs sm:text-sm font-mono text-slate-200">
+                "Have you seen my car keys anywhere? [fidgets with collar] I am completely certain that I left them on the counter."
+              </p>
+            </div>
+
+            <!-- High Velocity Ellipsis Compression -->
+            <div class="p-3 bg-tactical-950 rounded-xl border border-emerald-500/40 flex flex-col gap-1.5">
+              <div class="flex justify-between items-center text-[10px] font-mono text-emerald-400 font-bold uppercase">
+                <span>COMPRESSED OPERATOR ELLIPSIS:</span>
+                <span id="ellipsis-saving-pct" class="text-emerald-300 font-bold">-35% RAM</span>
+              </div>
+              <p id="ellipsis-stripped-sentence" class="text-xs sm:text-sm font-mono text-emerald-300">
+                "[Have you] Seen my car keys? [I'm] Sure I left them on the counter."
+              </p>
+            </div>
+
+            <div class="p-3 bg-tactical-950 rounded-xl border border-tactical-800 flex gap-2">
+              <input type="text" id="custom-ellipsis-input" placeholder="Test any custom witness statement..." class="flex-1 bg-tactical-900 border border-tactical-700 rounded px-2.5 py-1 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400">
+              <button id="strip-custom-ellipsis-btn" class="px-3 py-1 bg-cyan-700 hover:bg-cyan-600 text-white font-mono font-bold text-xs rounded transition">
+                Strip
+              </button>
+            </div>
+            <div id="custom-ellipsis-output" class="hidden p-2.5 rounded bg-tactical-900 border border-cyan-500/40 text-xs font-mono text-cyan-200"></div>
+          </div>
+
+          <!-- Right: Game B Articulated CCTV Monitor -->
+          <div class="lg:col-span-6 flex flex-col gap-2">
+            <div class="relative bg-black rounded-xl border-2 border-tactical-700 overflow-hidden shadow-2xl flex flex-col">
+              <canvas id="ellipsis-video-canvas" width="640" height="360" class="w-full h-auto block"></canvas>
+              <div class="absolute top-2.5 left-2.5 font-mono text-[10px] text-emerald-400 bg-black/75 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>REC [CAM-03 // WITNESS ELLIPSIS DEPOSITION]</span>
+              </div>
+              <div id="ellipsis-cctv-action-indicator" class="absolute bottom-10 left-2 right-2 text-center pointer-events-none">
+                <span class="bg-black/85 text-amber-300 border border-amber-500/50 px-3 py-1 rounded font-mono text-xs font-bold inline-block">
+                  ACTIVE TELL: SYNCHRONIZING
+                </span>
+              </div>
+              <div id="ellipsis-cctv-subtitles" class="absolute bottom-2 left-2 right-2 text-center pointer-events-none">
+                <span class="bg-black/85 text-slate-200 px-3 py-0.5 rounded font-mono text-xs inline-block max-w-full truncate border border-slate-700">
+                  "..."
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs font-mono text-slate-400 p-2 bg-tactical-950 rounded-lg border border-tactical-800">
+              <span id="ellipsis-video-timer" class="font-bold text-cyan-400">00:00 / 00:08</span>
+              <button id="ellipsis-video-replay-btn" class="px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-slate-200 rounded text-xs transition">
+                ↺ Replay Video
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-ironchef" class="game-view-panel hidden flex flex-col gap-6">
+      <div class="bg-tactical-900 border border-tactical-700 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+        
+        <div class="flex flex-wrap items-center justify-between border-b border-tactical-700/80 pb-3 gap-2">
+          <div>
+            <h2 class="text-slate-100 font-mono font-bold text-sm sm:text-base">
+              GAME C: IRON CHEF LIVE INTERROGATION SPARRING
+            </h2>
+            <p class="text-[11px] font-mono text-slate-400">Draw 3 random operational cards. Speak your interrogation probe (STT) testing all 3; suspect reacts on CCTV.</p>
+          </div>
+          <button id="ironchef-draw-btn" class="px-3 py-1.5 bg-purple-700 hover:bg-purple-600 text-white font-bold rounded text-xs font-mono transition shadow">
+            🎲 Draw 3 New Cards
+          </button>
+        </div>
+
+        <!-- 3 Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-tactical-950 p-3 rounded-xl border border-amber-500/40 flex flex-col justify-between">
+            <span class="text-[10px] font-mono text-amber-400 font-bold">1. BTOE CUE</span>
+            <div class="font-mono font-bold text-sm text-slate-100" id="ic-card1-title">Steeple Hands [St]</div>
+            <p class="text-[11px] font-mono text-slate-400" id="ic-card1-desc">Pyramid hand posture. High confidence indicator.</p>
+          </div>
+          <div class="bg-tactical-950 p-3 rounded-xl border border-cyan-500/40 flex flex-col justify-between">
+            <span class="text-[10px] font-mono text-cyan-400 font-bold">2. OPERATOR LINGUISTIC</span>
+            <div class="font-mono font-bold text-sm text-slate-100" id="ic-card2-title">Operator Anchor [op]</div>
+            <p class="text-[11px] font-mono text-slate-400" id="ic-card2-desc">Touch chest when describing positive attributes.</p>
+          </div>
+          <div class="bg-tactical-950 p-3 rounded-xl border border-emerald-500/40 flex flex-col justify-between">
+            <span class="text-[10px] font-mono text-emerald-400 font-bold">3. AUTHORITY PILLAR</span>
+            <div class="font-mono font-bold text-sm text-slate-100" id="ic-card3-title">Inspirational Composure</div>
+            <p class="text-[11px] font-mono text-slate-400" id="ic-card3-desc">Issue calm polite command; relaxed eye contact.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div class="lg:col-span-6 flex flex-col gap-3">
+            <div class="p-3 bg-tactical-950 rounded-xl border border-tactical-800 flex flex-col gap-2">
+              <div class="text-[10px] font-mono font-bold text-purple-400 uppercase">SPOKEN SPARRING QUERY (TEST 3 INGREDIENTS):</div>
+              <div class="flex gap-2">
+                <button id="ironchef-mic-btn" class="px-3 py-1.5 bg-tactical-800 hover:bg-purple-700 text-purple-200 rounded font-mono text-xs flex items-center space-x-1 border border-tactical-700">
+                  <span id="ironchef-mic-icon">🎙️</span>
+                  <span id="ironchef-mic-label">Speak</span>
+                </button>
+                <input type="text" id="ironchef-user-query" class="flex-1 bg-tactical-900 border border-tactical-700 rounded px-2.5 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-purple-400" placeholder="Speak your probe integrating the 3 cards...">
+                <button id="ironchef-send-turn-btn" class="px-3 py-1.5 bg-purple-700 hover:bg-purple-600 text-white font-mono font-bold text-xs rounded transition">
+                  Execute ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- Suspect Reaction Box -->
+            <div class="p-3 bg-tactical-950 rounded-xl border border-purple-500/40 flex flex-col gap-1.5">
+              <div class="flex justify-between items-center text-[10px] font-mono text-purple-400 font-bold uppercase">
+                <span>SUSPECT REACTION & RESPONSE:</span>
+                <span id="ironchef-countdown-display" class="text-amber-400">60.0s</span>
+              </div>
+              <p id="ironchef-suspect-transcript" class="text-xs sm:text-sm font-mono text-slate-200">
+                [arms cross into defensive barrier, lip compresses] "Why are you questioning my integrity like this? I came in here voluntarily."
+              </p>
+            </div>
+            <div id="ironchef-eval-result" class="hidden p-3 rounded bg-tactical-900 border border-purple-500/40 text-xs font-mono text-purple-200"></div>
+          </div>
+
+          <!-- Right: Game C Articulated CCTV Monitor -->
+          <div class="lg:col-span-6 flex flex-col gap-2">
+            <div class="relative bg-black rounded-xl border-2 border-tactical-700 overflow-hidden shadow-2xl flex flex-col">
+              <canvas id="ironchef-video-canvas" width="640" height="360" class="w-full h-auto block"></canvas>
+              <div class="absolute top-2.5 left-2.5 font-mono text-[10px] text-emerald-400 bg-black/75 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>REC [CAM-04 // IRON CHEF TACTICAL SPARRING]</span>
+              </div>
+              <div id="ironchef-cctv-action-indicator" class="absolute bottom-10 left-2 right-2 text-center pointer-events-none">
+                <span class="bg-black/85 text-amber-300 border border-amber-500/50 px-3 py-1 rounded font-mono text-xs font-bold inline-block">
+                  ACTIVE TELL: SYNCHRONIZING
+                </span>
+              </div>
+              <div id="ironchef-cctv-subtitles" class="absolute bottom-2 left-2 right-2 text-center pointer-events-none">
+                <span class="bg-black/85 text-slate-200 px-3 py-0.5 rounded font-mono text-xs inline-block max-w-full truncate border border-slate-700">
+                  "..."
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs font-mono text-slate-400 p-2 bg-tactical-950 rounded-lg border border-tactical-800">
+              <span id="ironchef-video-timer" class="font-bold text-purple-400">00:00 / 00:08</span>
+              <button id="ironchef-video-replay-btn" class="px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-slate-200 rounded text-xs transition">
+                ↺ Replay Video
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-matrix" class="game-view-panel hidden flex flex-col gap-5">
+      <div class="bg-tactical-900 border border-tactical-700 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+        <div class="flex flex-wrap items-center justify-between border-b border-tactical-700/80 pb-3 gap-2">
+          <div>
+            <h2 class="text-slate-100 font-mono font-bold text-sm sm:text-base">
+              THE BEHAVIORAL TABLE OF ELEMENTS (BTOE)
+            </h2>
+            <p class="text-[11px] font-mono text-slate-400">Chase Hughes Reference System // Head-to-Toe Nonverbal Architecture</p>
+          </div>
+          <div class="flex flex-wrap gap-1 text-[11px] font-mono" id="btoe-filter-bar">
+            <button class="btoe-filter-btn active px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/60" data-filter="all">All</button>
+            <button class="btoe-filter-btn px-2.5 py-1 rounded bg-tactical-800 text-slate-300 border border-tactical-700" data-filter="face">Face/Head</button>
+            <button class="btoe-filter-btn px-2.5 py-1 rounded bg-tactical-800 text-slate-300 border border-tactical-700" data-filter="arms">Arms/Upper</button>
+            <button class="btoe-filter-btn px-2.5 py-1 rounded bg-tactical-800 text-slate-300 border border-tactical-700" data-filter="lower">Lower/Feet</button>
+            <button class="btoe-filter-btn px-2.5 py-1 rounded bg-tactical-800 text-slate-300 border border-tactical-700" data-filter="verbal">Verbal/Direct</button>
+            <button class="btoe-filter-btn px-2.5 py-1 rounded bg-tactical-800 text-rose-300 border border-tactical-700" data-filter="critical">4.0 Critical</button>
+          </div>
+        </div>
+        <div id="btoe-matrix-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2"></div>
+      </div>
+    </section>
+
+    <section id="view-vision" class="game-view-panel hidden flex flex-col gap-6">
+      <div class="bg-tactical-900 border border-tactical-700 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+        <div class="flex flex-wrap items-center justify-between border-b border-tactical-700/80 pb-3 gap-2">
+          <h2 class="text-slate-100 font-mono font-bold text-sm sm:text-base">
+            MULTIMODAL VISION POSTURE & EXPRESSION SCANNER
+          </h2>
+          <span class="text-xs font-mono text-slate-400">Gemini 3 Flash Vision Analysis</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <div class="md:col-span-6 flex flex-col gap-3">
+            <div class="border-2 border-dashed border-tactical-700 hover:border-cyan-500 rounded-xl p-4 bg-tactical-950 flex flex-col items-center justify-center text-center cursor-pointer transition relative overflow-hidden group min-h-[240px]" id="vision-drop-zone">
+              <input type="file" id="vision-file-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+              <img id="vision-preview-img" class="hidden max-h-56 w-auto rounded object-contain mb-2" alt="Uploaded posture preview">
+              <div id="vision-upload-prompt" class="flex flex-col items-center">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-500 mb-2 group-hover:text-cyan-400 transition"></i>
+                <span class="font-mono text-xs text-slate-300 font-bold">CLICK OR DRAG & DROP INTERROGATION STILL</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center">
+              <span class="text-[11px] font-mono text-slate-400">Presets:</span>
+              <button class="vision-preset-btn px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-xs font-mono text-slate-200 rounded border border-tactical-700" data-preset="barrier">Defensive Barrier</button>
+              <button class="vision-preset-btn px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-xs font-mono text-slate-200 rounded border border-tactical-700" data-preset="steeple">Mastery Steeple</button>
+              <button class="vision-preset-btn px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-xs font-mono text-slate-200 rounded border border-tactical-700" data-preset="evasion">Lower Evasion</button>
+            </div>
+            <button id="run-vision-analysis-btn" class="w-full py-2.5 bg-cyan-700 hover:bg-cyan-600 text-white font-mono font-bold text-xs rounded-lg transition shadow">
+              👁️ Run Multimodal Vision Diagnostic
+            </button>
+          </div>
+          <div class="md:col-span-6 bg-tactical-950 p-4 rounded-xl border border-tactical-800 flex flex-col gap-3 min-h-[280px]">
+            <span class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wide">DIAGNOSTIC REPORT & ELEMENT DETECTIONS:</span>
+            <div id="vision-analysis-output" class="text-xs font-mono text-slate-300 leading-relaxed overflow-y-auto max-h-64">
+              Upload a frame or select a preset to detect microexpressions, spinal tilts, and BTOE cues.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="terminal-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-tactical-900 border border-cyan-500/60 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col">
+      <div class="bg-tactical-950 px-4 py-3 border-b border-tactical-800 flex justify-between items-center">
+        <div class="flex items-center space-x-2 font-mono text-xs text-cyan-400 font-bold">
+          <i class="fa-solid fa-terminal"></i>
+          <span>TACTICAL AI OPERATOR TERMINAL</span>
+        </div>
+        <button id="close-terminal-btn" class="text-slate-400 hover:text-white font-mono text-xs">✕</button>
+      </div>
+      <div id="terminal-chat-body" class="p-4 h-72 overflow-y-auto flex flex-col gap-2 font-mono text-xs text-slate-300 bg-tactical-950/80">
+        <p class="text-cyan-400">&gt; BTOE AI COPILOT ONLINE. Ready for behavioral profiling queries or live sparring.</p>
+      </div>
+      <div class="p-3 bg-tactical-900 border-t border-tactical-800 flex flex-col gap-2">
+        <div class="flex gap-2">
+          <input type="text" id="terminal-prompt-input" placeholder="Query BTOE codes, calculate cluster DRS, or request tactical moves..." class="flex-1 bg-tactical-950 border border-tactical-700 rounded px-3 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400">
+          <button id="terminal-send-btn" class="px-3 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-white font-mono text-xs rounded transition">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bau-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-tactical-900 border border-tactical-700 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="bg-tactical-950 px-4 py-3 border-b border-tactical-800 flex justify-between items-center">
+        <span class="font-mono text-xs text-slate-200 font-bold uppercase">FBI/NCIS BEHAVIORAL AUTOPSY DOSSIER</span>
+        <div class="flex items-center space-x-2">
+          <button id="copy-bau-btn" class="px-2.5 py-1 bg-tactical-800 hover:bg-tactical-700 text-cyan-300 text-xs font-mono rounded border border-tactical-700">Copy</button>
+          <button id="close-bau-modal-btn" class="text-slate-400 hover:text-white font-mono text-xs">✕</button>
+        </div>
+      </div>
+      <div id="bau-modal-content" class="p-4 overflow-y-auto font-mono text-xs text-slate-300 leading-relaxed bg-tactical-950/90 whitespace-pre-wrap"></div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    const BTOE_DATA = [
+      { symbol: "Ht", name: "Head Tilt", category: "face", type: "Open", drs: 1.0, region: "Head", desc: "Tilt of head exposing carotid. Receptivity and interest." },
+      { symbol: "Ef", name: "Brow Flash", category: "face", type: "Open", drs: 1.0, region: "Eyes", desc: "Rapid eyebrow raise (<0.2s). Universal greeting/validation indicator." },
+      { symbol: "Hd", name: "Head Downcast", category: "face", type: "Closed", drs: 2.0, region: "Head", desc: "Chin drops towards chest. Submissive or shame response." },
+      { symbol: "Lc", name: "Lip Compression", category: "face", type: "Closed", drs: 2.0, region: "Face", desc: "Horizontal pressing of lips together. Suppressed disagreement." },
+      { symbol: "Ts", name: "Teeth Suck", category: "face", type: "Closed", drs: 2.0, region: "Face", desc: "Inward drawing of breath over teeth. Tension and disapproval." },
+      { symbol: "Jc", name: "Jaw Clench", category: "face", type: "Aggressive", drs: 2.5, region: "Face", desc: "Masseter muscle contraction. Suppressed anger or intense fight stress." },
+      { symbol: "Wd", name: "Wing Dilation", category: "face", type: "Aggressive", drs: 3.0, region: "Face", desc: "Nostril flaring to intake oxygen. Fight-or-flight arousal." },
+      { symbol: "Cg", name: "Contempt Glance", category: "face", type: "Aggressive", drs: 4.0, region: "Face", desc: "Unilateral lip corner curl with asymmetric gaze. Moral superiority." },
+      { symbol: "St", name: "Steeple Hands", category: "arms", type: "Open", drs: 1.0, region: "Hands", desc: "Fingertips resting against each other in pyramid. Highest confidence anchor." },
+      { symbol: "Po", name: "Pockets (Hidden)", category: "arms", type: "Closed", drs: 2.0, region: "Hands", desc: "Hands buried deep in pockets. Concealment and withdrawal." },
+      { symbol: "Bon", name: "Back of Neck", category: "arms", type: "Unsure", drs: 2.5, region: "Neck", desc: "Hand reaches back to touch nape. Pacifying vagal calming response." },
+      { symbol: "Bar", name: "Barrier (Crossed)", category: "arms", type: "Closed", drs: 3.0, region: "Arms", desc: "Arms folded firmly over chest. Defensiveness." },
+      { symbol: "Ft", name: "Facial Touch", category: "arms", type: "Unsure", drs: 4.0, region: "Face", desc: "Hand covers or rubs mouth/nose during direct response. High deception tell." },
+      { symbol: "Bi", name: "Binding (Leg Wrap)", category: "lower", type: "Closed", drs: 2.0, region: "Legs", desc: "Feet or ankles hooked tightly around chair legs. Physical restraint." },
+      { symbol: "Kc", name: "Knee Clasp", category: "lower", type: "Unsure", drs: 3.0, region: "Legs", desc: "Both hands firmly grabbing kneecaps with forward tilt. Egress intention." },
+      { symbol: "Fw", name: "Foot Withdraw", category: "lower", type: "Closed", drs: 3.5, region: "Feet", desc: "Feet sharply pulled back under chair away from interrogator. Flight trigger." },
+      { symbol: "Fns", name: "Finger-to-Nose", category: "arms", type: "Unsure", drs: 4.0, region: "Face", desc: "Quick brush of columella or bridge under questioning. Stress response." },
+      { symbol: "Hes", name: "Hesitancy", category: "verbal", type: "Unsure", drs: 4.0, region: "Verbal", desc: "Delayed speech latency (>2.5s) on baseline direct question." },
+      { symbol: "Rip", name: "Rise in Pitch", category: "verbal", type: "Unsure", drs: 4.0, region: "Verbal", desc: "Vocal cords tighten involuntarily causing upward pitch jump." },
+      { symbol: "Spd", name: "Speed Increase", category: "verbal", type: "Aggressive", drs: 4.0, region: "Verbal", desc: "Rapid acceleration of words to finish response and escape scrutiny." },
+      { symbol: "NA", name: "Non-Answer Counter", category: "verbal", type: "Closed", drs: 4.0, region: "Verbal", desc: "Answering question with philosophical deflection or counter-question." }
+    ];
+
+    const AudioSynth = {
+      ctx: null,
+      muted: false,
+
+      init() {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        } catch (e) {
+          console.debug("Web Audio unavailable", e);
+        }
+      },
+
+      ensure() {
+        if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+      },
+
+      playClick() {
+        if (this.muted || !this.ctx) return;
+        this.ensure();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(750, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(350, this.ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.04);
+      },
+
+      playXPChime() {
+        if (this.muted || !this.ctx) return;
+        this.ensure();
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, now + i * 0.06);
+          gain.gain.setValueAtTime(0.12, now + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.06 + 0.18);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.06);
+          osc.stop(now + i * 0.06 + 0.18);
+        });
+      },
+
+      playWarningAlert() {
+        if (this.muted || !this.ctx) return;
+        this.ensure();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.linearRampToValueAtTime(220, now + 0.18);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      }
+    };
+
+    function showTacticalToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+      const toast = document.createElement("div");
+      
+      let borderClass = "border-cyan-500/60 bg-tactical-900 text-cyan-200";
+      if (type === "success") borderClass = "border-emerald-500/60 bg-tactical-900 text-emerald-200";
+      if (type === "warning") borderClass = "border-amber-500/60 bg-tactical-900 text-amber-200";
+      if (type === "error") borderClass = "border-rose-500/60 bg-tactical-900 text-rose-200";
+      if (type === "purple") borderClass = "border-purple-500/60 bg-tactical-900 text-purple-200";
+
+      toast.className = `p-3 rounded-lg border font-mono text-xs shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto ${borderClass} flex items-center space-x-2`;
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-rose-400' : 'bg-emerald-400'} animate-pulse"></span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+      });
+
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-x-4");
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    const XPEngine = {
+      totalXP: 0,
+      currentLevel: 1,
+      hiddenPerGame: {
+        sandboxInterrogation: 0,
+        deceptionBlitz: 0,
+        ellipsisChallenge: 0,
+        ironChef: 0,
+        sprintDrills: 0
+      },
+      ranks: [
+        { level: 1, name: "Rank 1: Spotter" },
+        { level: 2, name: "Rank 2: Tracker" },
+        { level: 3, name: "Rank 3: Profiler" },
+        { level: 4, name: "Rank 4: Operator" },
+        { level: 5, name: "Rank 5: Master Operator (Contagious Authority)" }
+      ],
+
+      init() {
+        this.loadState();
+        this.updateHUD();
+      },
+
+      loadState() {
+        try {
+          const savedXP = localStorage.getItem("btoe_operator_total_xp");
+          if (savedXP !== null) this.totalXP = parseInt(savedXP, 10) || 0;
+          const savedHidden = localStorage.getItem("btoe_hidden_pergame_xp");
+          if (savedHidden) this.hiddenPerGame = JSON.parse(savedHidden);
+        } catch (e) {
+          console.debug("Storage fallback", e);
+        }
+        this.currentLevel = Math.min(5, Math.floor(this.totalXP / 100) + 1);
+      },
+
+      saveState() {
+        try {
+          localStorage.setItem("btoe_operator_total_xp", this.totalXP);
+          localStorage.setItem("btoe_hidden_pergame_xp", JSON.stringify(this.hiddenPerGame));
+        } catch (e) {
+          console.debug("Storage save fallback", e);
+        }
+      },
+
+      awardXP(gameKey, amount) {
+        this.totalXP += amount;
+        if (this.hiddenPerGame[gameKey] !== undefined) {
+          this.hiddenPerGame[gameKey] += amount;
+        }
+
+        const oldLevel = this.currentLevel;
+        this.currentLevel = Math.min(5, Math.floor(this.totalXP / 100) + 1);
+
+        this.saveState();
+        this.updateHUD();
+        AudioSynth.playXPChime();
+
+        if (this.currentLevel > oldLevel) {
+          const rankObj = this.ranks.find(r => r.level === this.currentLevel) || this.ranks[this.ranks.length - 1];
+          showTacticalToast(`PROMOTED! You achieved ${rankObj.name}!`, "success");
+        } else {
+          showTacticalToast(`+${amount} XP Earned!`, "success");
+        }
+      },
+
+      updateHUD() {
+        const levelDisplay = document.getElementById("hud-user-level");
+        const rankDisplay = document.getElementById("hud-user-rank");
+        const xpRatio = document.getElementById("hud-xp-ratio");
+        const xpFill = document.getElementById("hud-xp-fill");
+
+        if (levelDisplay) levelDisplay.innerText = this.currentLevel;
+        const currentRank = this.ranks.find(r => r.level === this.currentLevel) || this.ranks[0];
+        if (rankDisplay) rankDisplay.innerText = currentRank.name;
+
+        const xpInCurrentLevel = this.totalXP % 100;
+        if (xpRatio) xpRatio.innerText = `${xpInCurrentLevel} / 100`;
+        if (xpFill) xpFill.style.width = `${xpInCurrentLevel}%`;
+      }
+    };
+
+    const GeminiService = {
+      apiKey: "",
+
+      async generateText(prompt, systemInstruction = "") {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }]
+        };
+        if (systemInstruction) {
+          payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+        }
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`Gemini Text Error: ${response.statusText}`);
+        const data = await response.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
+      },
+
+      async generateStructuredJSON(prompt, systemInstruction, schema) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: schema
+          }
+        };
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`Gemini JSON Error: ${response.statusText}`);
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        return JSON.parse(text);
+      },
+
+      /**
+       * Upgraded TTS Generator utilizing Gemini 3.1 Flash TTS (gemini-3.1-flash-tts-preview).
+       * Supports native steerable prompt styling and expressive audio tags ([clearing throat], [hesitantly], [with rising pitch]).
+       */
+      async generateTTS(text, voiceName = "Fenrir") {
+        // Preprocess dialogue: convert vocal tells into expressive tags while stripping physical stage directions
+        const expressiveScript = formatScriptForTTS(text);
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${this.apiKey}`;
+        const payload = {
+          contents: [{ parts: [{ text: expressiveScript }] }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName: voiceName }
+              }
+            }
+          }
+        };
+
+        let response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        // Dynamic fallback to gemini-2.5-flash-preview-tts if 3.1 endpoint returns 404 or temporary error
+        if (!response.ok) {
+          const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${this.apiKey}`;
+          response = await fetch(fallbackUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (!response.ok) throw new Error(`TTS Error: ${response.statusText}`);
+        const data = await response.json();
+        const part = data.candidates?.[0]?.content?.parts?.[0];
+        const audioData = part?.inlineData?.data;
+        const mimeType = part?.inlineData?.mimeType || "audio/L16;rate=24000";
+
+        if (!audioData) throw new Error("No audio payload received.");
+        const rateMatch = mimeType.match(/rate=(\d+)/);
+        const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+
+        const pcmBuffer = base64ToArrayBuffer(audioData);
+        const pcm16 = new Int16Array(pcmBuffer);
+        const wavBlob = pcmToWav(pcm16, sampleRate);
+        return { url: URL.createObjectURL(wavBlob) };
+      },
+
+      async searchGroundedCases(query) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+        const prompt = `Research verified real-world legal depositions or high-stakes interrogations for: "${query}". Provide a summary, an authentic Q&A transcript with bracketed nonverbal tells, and BTOE DRS scoring.`;
+        
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          tools: [{ google_search: {} }]
+        };
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`Grounding Error: ${response.statusText}`);
+        const data = await response.json();
+        const candidate = data.candidates?.[0];
+        const text = candidate?.content?.parts?.[0]?.text || "No dossier retrieved.";
+
+        let sources = [];
+        if (candidate?.groundingMetadata?.groundingAttributions) {
+          sources = candidate.groundingMetadata.groundingAttributions
+            .map(a => ({ uri: a.web?.uri, title: a.web?.title }))
+            .filter(s => s.uri && s.title);
+        }
+
+        return { text, sources };
+      }
+    };
+
+    function base64ToArrayBuffer(base64) {
+      const binaryString = window.atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    function pcmToWav(pcm16, sampleRate = 24000) {
+      const numChannels = 1;
+      const byteRate = sampleRate * numChannels * 2;
+      const blockAlign = numChannels * 2;
+      const dataSize = pcm16.length * 2;
+      const buffer = new ArrayBuffer(44 + dataSize);
+      const view = new DataView(buffer);
+
+      function writeString(offset, string) {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      }
+
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, byteRate, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true); // 16-bit
+      writeString(36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < pcm16.length; i++, offset += 2) {
+        view.setInt16(offset, pcm16[i], true);
+      }
+
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    /**
+     * Converts raw interrogation dialogue containing bracketed nonverbal cues
+     * into steerable expressive audio tags for Gemini 3.1 Flash TTS while stripping
+     * out purely physical movements so the voice model never speaks stage directions.
+     */
+    function formatScriptForTTS(rawText) {
+      if (!rawText) return "";
+
+      const segments = [];
+      let lastIdx = 0;
+      const regex = /\[(.*?)\]/g;
+      let match;
+
+      while ((match = regex.exec(rawText)) !== null) {
+        const preText = rawText.slice(lastIdx, match.index);
+        if (preText.trim()) {
+          segments.push({ type: "text", content: preText.trim() });
+        }
+        segments.push({ type: "bracket", content: match[1].trim() });
+        lastIdx = regex.lastIndex;
+      }
+      const postText = rawText.slice(lastIdx);
+      if (postText.trim()) {
+        segments.push({ type: "text", content: postText.trim() });
+      }
+
+      let expressiveScript = "";
+      let pendingVocalTags = [];
+
+      segments.forEach(seg => {
+        if (seg.type === "bracket") {
+          const lower = seg.content.toLowerCase();
+          const vocalTags = [];
+
+          if (lower.includes("clear") && lower.includes("throat")) vocalTags.push("clearing throat");
+          if (lower.includes("pitch") || lower.includes("rip")) vocalTags.push("with sudden rising pitch");
+          if (lower.includes("hesitat") || lower.includes("pause")) vocalTags.push("hesitantly");
+          if (lower.includes("defens") || lower.includes("accusatory")) vocalTags.push("defensively");
+          if (lower.includes("speed") || lower.includes("rapid") || lower.includes("spd")) vocalTags.push("fast, rushed pace");
+          if (lower.includes("whisper") || lower.includes("soft")) vocalTags.push("whispering");
+          if (lower.includes("stutter") || lower.includes("stammer")) vocalTags.push("stuttering, nervous");
+          if (lower.includes("sigh")) vocalTags.push("sighing");
+          if (lower.includes("nervous") || lower.includes("anxious") || lower.includes("stress")) vocalTags.push("nervously");
+
+          if (vocalTags.length > 0) {
+            pendingVocalTags.push(...vocalTags);
+          }
+          // Note: Physical movements (e.g. 'rubs back of neck', 'legs wrap around chair legs',
+          // 'crosses arms into defensive barrier') are omitted from voice tags so they are not spoken aloud.
+        } else {
+          if (pendingVocalTags.length > 0) {
+            const uniqueTags = [...new Set(pendingVocalTags)].join(", ");
+            expressiveScript += `[${uniqueTags}] ${seg.content} `;
+            pendingVocalTags = [];
+          } else {
+            expressiveScript += `${seg.content} `;
+          }
+        }
+      });
+
+      return expressiveScript.trim() || rawText.replace(/\[.*?\]/g, " ").trim();
+    }
+
+    // High-reliability Speech Synthesizer with Gemini 3.1 Flash TTS and Web Speech API fallback
+    async function speakSuspectAnswer(rawDialogue, voiceName = "Fenrir") {
+      try {
+        const ttsResult = await GeminiService.generateTTS(rawDialogue, voiceName);
+        const audio = new Audio(ttsResult.url);
+        return { audio, play: () => audio.play() };
+      } catch (err) {
+        console.debug("Gemini 3.1 Flash TTS fallback to browser Web Speech API", err);
+        const cleanSpoken = rawDialogue.replace(/\[.*?\]/g, " ").replace(/\s+/g, " ").trim();
+        const lower = rawDialogue.toLowerCase();
+        const hasPitchJump = lower.includes("pitch") || lower.includes("rip");
+        const hasRushed = lower.includes("speed") || lower.includes("rapid");
+
+        return {
+          audio: null,
+          play: () => {
+            if ("speechSynthesis" in window) {
+              window.speechSynthesis.cancel();
+              const utter = new SpeechSynthesisUtterance(cleanSpoken);
+              utter.rate = hasRushed ? 1.25 : 1.0;
+              utter.pitch = hasPitchJump ? 1.35 : (voiceName === "Fenrir" ? 0.9 : 1.1);
+              window.speechSynthesis.speak(utter);
+            }
+          }
+        };
+      }
+    }
+
+    const SprintTimer = {
+      totalSprintSecs: 15 * 60,
+      totalBreakSecs: 3 * 60,
+      remainingSecs: 15 * 60,
+      isBreak: false,
+      isRunning: false,
+      intervalId: null,
+
+      init() {
+        this.updateDisplay();
+        document.getElementById("sprint-toggle-btn").addEventListener("click", () => this.toggle());
+        document.getElementById("sprint-reset-btn").addEventListener("click", () => this.reset());
+        document.getElementById("sprint-test-btn").addEventListener("click", () => this.testTenSecs());
+      },
+
+      toggle() {
+        if (this.isRunning) this.pause();
+        else this.start();
+      },
+
+      start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        AudioSynth.playClick();
+        document.getElementById("sprint-play-icon").className = "fa-solid fa-pause";
+
+        this.intervalId = setInterval(() => {
+          this.remainingSecs--;
+          if (this.remainingSecs <= 0) this.handlePhaseTransition();
+          this.updateDisplay();
+        }, 1000);
+      },
+
+      pause() {
+        this.isRunning = false;
+        AudioSynth.playClick();
+        clearInterval(this.intervalId);
+        document.getElementById("sprint-play-icon").className = "fa-solid fa-play";
+      },
+
+      reset() {
+        this.pause();
+        this.isBreak = false;
+        this.remainingSecs = this.totalSprintSecs;
+        this.updateDisplay();
+        showTacticalToast("Sprint Timer Reset to 15:00", "info");
+      },
+
+      testTenSecs() {
+        this.pause();
+        this.remainingSecs = 10;
+        this.start();
+        showTacticalToast("Test 10-Second Countdown Started", "warning");
+      },
+
+      handlePhaseTransition() {
+        clearInterval(this.intervalId);
+        this.isRunning = false;
+        AudioSynth.playWarningAlert();
+
+        if (!this.isBreak) {
+          this.isBreak = true;
+          this.remainingSecs = this.totalBreakSecs;
+          XPEngine.awardXP("sprintDrills", 30);
+          showTacticalToast("15-Min Sprint Complete! (+30 XP) Begin 3-Min Physical Movement Burst (Jumping Jacks / Wall-Sits).", "warning");
+        } else {
+          this.isBreak = false;
+          this.remainingSecs = this.totalSprintSecs;
+          showTacticalToast("Somatic Reset Complete! Dopamine & Prefrontal Cortex Oxygenated.", "success");
+        }
+        document.getElementById("sprint-play-icon").className = "fa-solid fa-play";
+        this.updateDisplay();
+      },
+
+      updateDisplay() {
+        const mins = Math.floor(this.remainingSecs / 60);
+        const secs = this.remainingSecs % 60;
+        const fmt = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        const display = document.getElementById("sprint-timer-display");
+        const label = document.getElementById("sprint-phase-label");
+
+        if (display) display.innerText = fmt;
+        if (label) {
+          if (this.isBreak) {
+            label.innerText = "3M SOMATICS RESET";
+            label.className = "text-[9px] uppercase font-bold text-amber-400 leading-none";
+          } else {
+            label.innerText = "15M SPRINT";
+            label.className = "text-[9px] uppercase font-bold text-emerald-400 leading-none";
+          }
+        }
+      }
+    };
+
+    /**
+     * Reusable CCTV Video Articulation Engine that draws each suspect response,
+     * lip-syncing to speech and sequentially depicting every bracketed behavior.
+     */
+    class CCTVVideoPlayer {
+      constructor(canvasId, actionIndicatorId, subtitleId, timeDisplayId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas ? this.canvas.getContext("2d") : null;
+        this.actionIndicatorEl = document.getElementById(actionIndicatorId);
+        this.subtitleEl = document.getElementById(subtitleId);
+        this.timeDisplayEl = document.getElementById(timeDisplayId);
+        this.audio = null;
+        this.actions = [];
+        this.cleanText = "";
+        this.currentTime = 0;
+        this.totalDuration = 8.0;
+        this.isPlaying = false;
+        this.animFrameId = null;
+        this.filter = "cctv"; // cctv, noir, thermal
+      }
+
+      load(data) {
+        this.stop();
+        this.cleanText = data.cleanText || "";
+        this.actions = data.actions || [];
+        this.audio = data.audio || null;
+        this.totalDuration = Math.max(5.0, this.actions.length * 2.8);
+        this.currentTime = 0;
+
+        if (this.audio) {
+          this.audio.currentTime = 0;
+          this.audio.addEventListener("loadedmetadata", () => {
+            if (this.audio.duration && !isNaN(this.audio.duration)) {
+              this.totalDuration = Math.max(this.audio.duration, 5.0);
+            }
+          });
+          this.audio.addEventListener("ended", () => this.pause());
+        }
+
+        if (this.subtitleEl) {
+          this.subtitleEl.innerHTML = `<span class="bg-black/85 text-slate-200 px-3 py-0.5 rounded font-mono text-xs inline-block max-w-full truncate border border-slate-700">"${this.cleanText.slice(0, 70)}..."</span>`;
+        }
+
+        this.drawFrame();
+      }
+
+      play() {
+        if (this.isPlaying) return;
+        this.isPlaying = true;
+        if (this.audio) this.audio.play().catch(e => console.debug("Audio play issue", e));
+
+        let lastT = performance.now();
+        const loop = (now) => {
+          const dt = (now - lastT) / 1000;
+          lastT = now;
+
+          if (this.audio && !this.audio.paused) {
+            this.currentTime = this.audio.currentTime;
+          } else {
+            this.currentTime += dt;
+            if (this.currentTime >= this.totalDuration) {
+              this.currentTime = this.totalDuration;
+              this.pause();
+            }
+          }
+
+          this.drawFrame();
+          this.updateTimeDisplay();
+
+          if (this.isPlaying) {
+            this.animFrameId = requestAnimationFrame(loop);
+          }
+        };
+        this.animFrameId = requestAnimationFrame(loop);
+      }
+
+      pause() {
+        this.isPlaying = false;
+        if (this.audio) this.audio.pause();
+        if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
+      }
+
+      stop() {
+        this.pause();
+        this.currentTime = 0;
+        if (this.audio) {
+          this.audio.pause();
+          this.audio = null;
+        }
+      }
+
+      replay() {
+        this.stop();
+        this.play();
+      }
+
+      drawFrame() {
+        if (!this.canvas || !this.ctx) return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const ctx = this.ctx;
+
+        // Determine which bracketed action is active at currentTime
+        const count = Math.max(1, this.actions.length);
+        const segmentDur = this.totalDuration / count;
+        let activeIdx = Math.floor(this.currentTime / segmentDur);
+        if (activeIdx >= count) activeIdx = count - 1;
+        if (activeIdx < 0) activeIdx = 0;
+
+        const activeAct = this.actions[activeIdx] || { actionText: "Sits upright at table", cueSymbol: "St" };
+        const actStr = (activeAct.actionText || "").toLowerCase();
+
+        // Background: Interrogation room
+        const roomGrad = ctx.createRadialGradient(320, 180, 25, 320, 180, 330);
+        roomGrad.addColorStop(0, "#192430");
+        roomGrad.addColorStop(0.6, "#0c131c");
+        roomGrad.addColorStop(1, "#04070a");
+        ctx.fillStyle = roomGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Overhead interrogation light cone
+        ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
+        ctx.beginPath();
+        ctx.moveTo(250, 0);
+        ctx.lineTo(390, 0);
+        ctx.lineTo(510, 360);
+        ctx.lineTo(130, 360);
+        ctx.closePath();
+        ctx.fill();
+
+        // Sterile interrogation metal table & chair
+        ctx.fillStyle = "#111822";
+        ctx.fillRect(80, 240, 480, 95);
+        ctx.strokeStyle = "#253342";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(80, 240, 480, 95);
+
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(275, 110, 90, 140);
+
+        // Dynamics: breathing, speech mouth modulation, blinking
+        const t = this.currentTime;
+        const breathY = Math.sin(t * 2.8) * 2.5;
+        const isBlinking = (t % 3.2) > 3.05;
+        const speechAmp = this.isPlaying ? Math.abs(Math.sin(t * 14)) * 0.7 : 0;
+
+        // Head position (accommodates head downcast/tilt)
+        let headY = 120 + breathY * 0.4;
+        let headX = 320;
+        let headRot = 0;
+
+        if (actStr.includes("tilt") || actStr.includes("ht")) {
+          headRot = 0.15;
+          headX += 4;
+        } else if (actStr.includes("downcast") || actStr.includes("chin") || actStr.includes("hd")) {
+          headY += 10;
+        }
+
+        ctx.save();
+        ctx.translate(headX, headY);
+        ctx.rotate(headRot);
+
+        // Head circle
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Eyeballs & Brow
+        ctx.fillStyle = "#38bdf8";
+        ctx.strokeStyle = "#38bdf8";
+        if (isBlinking) {
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-12, -3); ctx.lineTo(-4, -3);
+          ctx.moveTo(4, -3); ctx.lineTo(12, -3);
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(-8, -3, 2.8, 0, Math.PI * 2);
+          ctx.arc(8, -3, 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Brow Flash or Narrow
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (actStr.includes("brow flash") || actStr.includes("ef")) {
+          ctx.moveTo(-14, -12); ctx.lineTo(-2, -12);
+          ctx.moveTo(2, -12); ctx.lineTo(14, -12);
+        } else {
+          ctx.moveTo(-14, -8); ctx.lineTo(-2, -8);
+          ctx.moveTo(2, -8); ctx.lineTo(14, -8);
+        }
+        ctx.stroke();
+
+        // Mouth (articulated speech and lip compression)
+        ctx.fillStyle = "#f87171";
+        ctx.strokeStyle = "#f87171";
+        ctx.beginPath();
+        if (actStr.includes("compress") || actStr.includes("lip") || actStr.includes("lc")) {
+          ctx.lineWidth = 3.5;
+          ctx.moveTo(-8, 14); ctx.lineTo(8, 14);
+          ctx.stroke();
+        } else if (actStr.includes("contempt") || actStr.includes("smirk") || actStr.includes("cg")) {
+          ctx.lineWidth = 2.5;
+          ctx.moveTo(-8, 14); ctx.quadraticCurveTo(0, 14, 8, 10);
+          ctx.stroke();
+        } else if (speechAmp > 0.08) {
+          const mouthOpen = 2 + speechAmp * 7;
+          ctx.ellipse(0, 14, 6, mouthOpen, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.lineWidth = 2;
+          ctx.moveTo(-6, 14); ctx.lineTo(6, 14);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+
+        // Torso spine
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(320, headY + 28);
+        ctx.lineTo(320, 240 + breathY);
+        ctx.stroke();
+
+        // Arm gestures depicting bracketed tells
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        if (actStr.includes("neck") || actStr.includes("nape") || actStr.includes("bon")) {
+          // Hand reaching to back of neck
+          const rubOffset = Math.sin(t * 4) * 3;
+          ctx.moveTo(320, 160 + breathY);
+          ctx.lineTo(365, 135);
+          ctx.lineTo(336 + rubOffset, 125);
+          ctx.moveTo(320, 160 + breathY);
+          ctx.lineTo(270, 230);
+        } else if (actStr.includes("cross") || actStr.includes("barrier") || actStr.includes("bar") || actStr.includes("acc")) {
+          // Crossed arms barrier
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(285, 195);
+          ctx.lineTo(345, 195);
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(355, 195);
+          ctx.lineTo(295, 195);
+        } else if (actStr.includes("steeple") || actStr.includes("st")) {
+          // Pyramid steepled fingertips
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(295, 205);
+          ctx.lineTo(320, 190);
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(345, 205);
+          ctx.lineTo(320, 190);
+        } else if (actStr.includes("pocket") || actStr.includes("po")) {
+          // Hands thrust into pockets
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(295, 235);
+          ctx.lineTo(305, 248);
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(345, 235);
+          ctx.lineTo(335, 248);
+        } else if (actStr.includes("nose") || actStr.includes("fns") || actStr.includes("touch")) {
+          // Finger touching nose/mouth
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(345, 150);
+          ctx.lineTo(325, 134);
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(275, 220);
+        } else {
+          // Resting on interrogation table
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(275, 220);
+          ctx.lineTo(240, 240);
+          ctx.moveTo(320, 165 + breathY);
+          ctx.lineTo(365, 220);
+          ctx.lineTo(400, 240);
+        }
+        ctx.stroke();
+
+        // Lower body legs & feet tells
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        if (actStr.includes("bind") || actStr.includes("wrap") || actStr.includes("ankle") || actStr.includes("bi")) {
+          // Legs tightly hooked/bound around chair legs
+          ctx.moveTo(310, 240);
+          ctx.lineTo(330, 280);
+          ctx.lineTo(295, 330);
+          ctx.moveTo(330, 240);
+          ctx.lineTo(310, 280);
+          ctx.lineTo(345, 330);
+        } else if (actStr.includes("withdraw") || actStr.includes("foot") || actStr.includes("fw")) {
+          // Feet pulled back beneath chair in flight posture
+          ctx.moveTo(310, 240);
+          ctx.lineTo(290, 290);
+          ctx.lineTo(270, 330);
+          ctx.moveTo(330, 240);
+          ctx.lineTo(350, 290);
+          ctx.lineTo(370, 330);
+        } else if (actStr.includes("knee") || actStr.includes("kc")) {
+          // Knuckles clasping kneecaps
+          ctx.moveTo(310, 240);
+          ctx.lineTo(300, 310);
+          ctx.moveTo(330, 240);
+          ctx.lineTo(340, 310);
+        } else {
+          // Baseline seated
+          ctx.moveTo(310, 240);
+          ctx.lineTo(300, 330);
+          ctx.moveTo(330, 240);
+          ctx.lineTo(340, 330);
+        }
+        ctx.stroke();
+
+        // Feed style filters
+        if (this.filter === "noir") {
+          ctx.fillStyle = "rgba(10, 15, 25, 0.4)";
+          ctx.fillRect(0, 0, w, h);
+        } else if (this.filter === "thermal") {
+          const therm = ctx.createRadialGradient(320, 140, 5, 320, 140, 45);
+          therm.addColorStop(0, "rgba(239, 68, 68, 0.6)");
+          therm.addColorStop(0.5, "rgba(245, 158, 11, 0.35)");
+          therm.addColorStop(1, "rgba(16, 185, 129, 0)");
+          ctx.fillStyle = therm;
+          ctx.fillRect(0, 0, w, h);
+        }
+
+        // Vignette & scanlines
+        const vignette = ctx.createRadialGradient(w / 2, h / 2, w / 4, w / 2, h / 2, w / 1.4);
+        vignette.addColorStop(0, "rgba(0,0,0,0)");
+        vignette.addColorStop(1, "rgba(0,0,0,0.65)");
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
+        for (let y = 0; y < h; y += 4) {
+          ctx.fillRect(0, y, w, 2);
+        }
+
+        // Update active tell indicator overlay
+        if (this.actionIndicatorEl) {
+          const actDisplay = activeAct.actionText ? activeAct.actionText.toUpperCase() : "BASELINE BEHAVIOR";
+          this.actionIndicatorEl.innerHTML = `<span class="bg-black/85 text-amber-300 border border-amber-500/50 px-3 py-1 rounded font-mono text-xs font-bold inline-block shadow-lg">ACTIVE TELL [${activeIdx + 1}/${count}]: ${actDisplay}</span>`;
+        }
+      }
+
+      updateTimeDisplay() {
+        if (!this.timeDisplayEl) return;
+        const curSecs = this.currentTime.toFixed(1);
+        const totSecs = this.totalDuration.toFixed(1);
+        this.timeDisplayEl.innerText = `${curSecs}s / ${totSecs}s`;
+      }
+    }
+
+    function createSpeechRecognition(onResultCallback, onStartCallback, onEndCallback) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) return null;
+      const recognizer = new SpeechRec();
+      recognizer.continuous = false;
+      recognizer.interimResults = false;
+      recognizer.lang = "en-US";
+
+      recognizer.onstart = () => { if (onStartCallback) onStartCallback(); };
+      recognizer.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (onResultCallback) onResultCallback(transcript);
+      };
+      recognizer.onerror = () => { if (onEndCallback) onEndCallback(); };
+      recognizer.onend = () => { if (onEndCallback) onEndCallback(); };
+      return recognizer;
+    }
+
+    const LiveSandbox = {
+      chatHistory: [],
+      totalDRS: 0,
+      cuesHistory: [],
+      currentPersona: "cfo_embezzle",
+      recognizer: null,
+      isListening: false,
+      videoPlayer: null,
+
+      personas: {
+        cfo_embezzle: {
+          name: "Arthur Pendelton (CFO)",
+          case: "Suspected Embezzlement of $240,000 via offshore wire.",
+          voice: "Fenrir",
+          system: "You are Arthur Pendelton, a nervous corporate CFO who embezzled $240,000. When questioned, you lie, deflect, and act defensive. Crucially, accompany your spoken responses with bracketed non-verbal behaviors from Chase Hughes' Behavioral Table of Elements (e.g. [hesitates, pitch jumps upward], [clears throat, rubs back of neck while legs wrap tightly around chair legs], [smirks unilaterally with contempt], [crosses arms into defensive barrier]). Keep spoken answers to 2-3 sentences."
+        },
+        innocent_witness: {
+          name: "Elena Rostova (Lab Technician)",
+          case: "Witnessed unauthorized entry at 22:00. Truthful but anxious.",
+          voice: "Puck",
+          system: "You are Elena Rostova, an innocent lab technician who witnessed the door being forced open. You tell the truth. Because of high stress and fear of getting involved, you display nervous behaviors in brackets (e.g. [rapid eyelid blink], [steeple hands when reciting factual timeline], [head downcast briefly], [fingers touch collarbone]). Keep spoken answers to 2-3 sentences."
+        },
+        courier_smuggler: {
+          name: "Derrick Vance (Dock Dispatcher)",
+          case: "Contraband container swapped at Bay 7. Highly evasive.",
+          voice: "Fenrir",
+          system: "You are Derrick Vance, a tough port dispatcher who accepted a payoff to unlock Bay 7. You are hostile and evasive. In brackets, display lower body flight and verbal cues (e.g. [hands shoved deep in pockets], [feet sharply withdraw under chair], [speaks with abrupt speed increase], [jaw clenches tightly]). Keep answers to 2-3 sentences."
+        }
+      },
+
+      init() {
+        this.videoPlayer = new CCTVVideoPlayer(
+          "sandbox-video-canvas",
+          "sandbox-cctv-action-indicator",
+          "sandbox-cctv-subtitles",
+          "sandbox-video-time"
+        );
+
+        this.resetSession();
+
+        // Persona select
+        document.getElementById("sandbox-persona-select").addEventListener("change", (e) => {
+          this.currentPersona = e.target.value;
+          this.resetSession();
+        });
+
+        document.getElementById("sandbox-reset-btn").addEventListener("click", () => this.resetSession());
+        document.getElementById("sandbox-send-btn").addEventListener("click", () => this.askQuestion());
+        document.getElementById("sandbox-user-input").addEventListener("keydown", (e) => {
+          if (e.key === "Enter") this.askQuestion();
+        });
+
+        // CCTV controls
+        document.getElementById("sandbox-video-replay-btn").addEventListener("click", () => this.videoPlayer.replay());
+        document.getElementById("sandbox-cctv-filter").addEventListener("change", (e) => {
+          this.videoPlayer.filter = e.target.value;
+          this.videoPlayer.drawFrame();
+        });
+
+        document.getElementById("sandbox-export-webm-btn").addEventListener("click", () => this.exportVideo());
+        document.getElementById("sandbox-report-btn").addEventListener("click", () => this.generateSessionReport());
+
+        this.setupMic();
+      },
+
+      setupMic() {
+        const micBtn = document.getElementById("sandbox-mic-btn");
+        const micLabel = document.getElementById("sandbox-mic-label");
+        const micIcon = document.getElementById("sandbox-mic-icon");
+        const status = document.getElementById("sandbox-stt-status");
+        const input = document.getElementById("sandbox-user-input");
+
+        this.recognizer = createSpeechRecognition(
+          (transcript) => {
+            input.value = transcript;
+            showTacticalToast(`Voice transcribed: "${transcript}"`, "success");
+            this.askQuestion();
+          },
+          () => {
+            this.isListening = true;
+            micLabel.innerText = "Listening...";
+            micIcon.innerText = "🔴";
+            micBtn.classList.replace("bg-tactical-800", "bg-rose-700");
+            status.innerText = "Microphone Active: Speak your probe...";
+            status.className = "text-rose-400 font-bold animate-pulse";
+          },
+          () => {
+            this.isListening = false;
+            micLabel.innerText = "Speak";
+            micIcon.innerText = "🎙️";
+            micBtn.classList.replace("bg-rose-700", "bg-tactical-800");
+            status.innerText = "Mic Ready";
+            status.className = "text-slate-500";
+          }
+        );
+
+        micBtn.addEventListener("click", () => {
+          if (!this.recognizer) {
+            showTacticalToast("Speech recognition not supported in this browser. Please type query.", "warning");
+            return;
+          }
+          if (this.isListening) {
+            this.recognizer.stop();
+          } else {
+            try { this.recognizer.start(); }
+            catch (e) { console.debug("Mic start issue", e); }
+          }
+        });
+      },
+
+      resetSession() {
+        const persona = this.personas[this.currentPersona];
+        this.chatHistory = [];
+        this.totalDRS = 0;
+        this.cuesHistory = [];
+
+        const feed = document.getElementById("sandbox-chat-feed");
+        feed.innerHTML = `
+          <div class="p-3 bg-tactical-950 border border-emerald-500/40 rounded-lg text-slate-300">
+            <span class="text-emerald-400 font-bold uppercase">INTERROGATION SESSION INITIALIZED:</span> ${persona.name}
+            <div class="text-[11px] text-slate-400 mt-1">${persona.case}</div>
+            <div class="text-[10px] text-cyan-400 mt-1">🎙️ Speak or type a question to trigger speech synthesis and CCTV video.</div>
+          </div>
+        `;
+
+        document.getElementById("sandbox-cues-history").innerHTML = `<p class="text-slate-500">Speak or enter a question to start logging observable tells.</p>`;
+        this.updateDRSMeter();
+
+        this.videoPlayer.load({
+          cleanText: "Awaiting investigator question...",
+          actions: [{ actionText: "Seated upright at interrogation table awaiting question", cueSymbol: "St" }]
+        });
+      },
+
+      async askQuestion() {
+        const input = document.getElementById("sandbox-user-input");
+        const q = input.value.trim();
+        if (!q) return;
+
+        input.value = "";
+        const feed = document.getElementById("sandbox-chat-feed");
+
+        feed.innerHTML += `
+          <div class="p-3 bg-tactical-900 border border-cyan-500/40 rounded-lg text-cyan-200">
+            <span class="text-[10px] text-cyan-400 uppercase font-bold block mb-1">INVESTIGATOR (YOU - VIA VOICE/TEXT):</span>
+            ${q}
+          </div>
+        `;
+        feed.scrollTop = feed.scrollHeight;
+
+        const persona = this.personas[this.currentPersona];
+        this.chatHistory.push({ role: "user", parts: [{ text: q }] });
+
+        const sendBtn = document.getElementById("sandbox-send-btn");
+        sendBtn.disabled = true;
+        sendBtn.innerText = "Interrogating...";
+
+        try {
+          // 1. Generate text response
+          const reply = await GeminiService.generateText(q, persona.system);
+          this.chatHistory.push({ role: "model", parts: [{ text: reply }] });
+
+          // 2. Extract bracketed nonverbal tells
+          const regex = /\[(.*?)\]/g;
+          let matches = [];
+          let match;
+          while ((match = regex.exec(reply)) !== null) {
+            matches.push(match[1].trim());
+          }
+
+          let turnDRS = 0;
+          const actionsList = [];
+          matches.forEach((act) => {
+            const actLower = act.toLowerCase();
+            let drs = 2.0;
+            let sym = "Bon";
+            if (actLower.includes("pitch") || actLower.includes("hesitat") || actLower.includes("speed") || actLower.includes("contempt")) {
+              drs = 4.0; sym = "Rip";
+            } else if (actLower.includes("neck") || actLower.includes("jaw")) {
+              drs = 2.5; sym = "Bon";
+            } else if (actLower.includes("steeple") || actLower.includes("flash")) {
+              drs = 1.0; sym = "St";
+            } else if (actLower.includes("withdraw") || actLower.includes("foot")) {
+              drs = 3.5; sym = "Fw";
+            }
+            turnDRS += drs;
+            this.cuesHistory.push({ cue: act, drs });
+            actionsList.push({ actionText: act, cueSymbol: sym });
+          });
+
+          if (actionsList.length === 0) {
+            actionsList.push({ actionText: "Maintains neutral gaze", cueSymbol: "St" });
+          }
+
+          this.totalDRS += turnDRS;
+
+          // 3. Synthesize suspect voice via Gemini 3.1 Flash TTS with expressive tags
+          const cleanSpoken = reply.replace(/\[.*?\]/g, " ").trim();
+          const voiceObj = await speakSuspectAnswer(reply, persona.voice);
+
+          // 4. Always generate and render articulated video of answer
+          this.videoPlayer.load({
+            cleanText: cleanSpoken,
+            actions: actionsList,
+            audio: voiceObj.audio
+          });
+          this.videoPlayer.play();
+          voiceObj.play();
+
+          // Render turn in feed
+          feed.innerHTML += `
+            <div class="p-3 bg-tactical-950 border border-emerald-500/40 rounded-lg text-slate-200 scanline">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-[10px] text-emerald-400 uppercase font-bold">${persona.name}:</span>
+                <span class="text-[10px] text-amber-400 font-bold">+${turnDRS.toFixed(1)} DRS</span>
+              </div>
+              <p class="leading-relaxed font-mono text-xs">${reply}</p>
+              <div class="mt-2 pt-2 border-t border-tactical-800 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Observed Tells: <strong class="text-amber-300">${actionsList.length}</strong></span>
+                <span class="text-cyan-400 font-bold">🎙️ Gemini 3.1 TTS + CCTV Active</span>
+              </div>
+            </div>
+          `;
+          feed.scrollTop = feed.scrollHeight;
+
+          this.renderCuesHistory();
+          this.updateDRSMeter();
+          AudioSynth.playClick();
+          XPEngine.awardXP("sandboxInterrogation", 15);
+        } catch (err) {
+          console.error(err);
+          feed.innerHTML += `<div class="p-3 bg-rose-950/50 border border-rose-500 rounded text-rose-300">Interrogation transmission interrupted.</div>`;
+        } finally {
+          sendBtn.disabled = false;
+          sendBtn.innerText = "Ask ➔";
+        }
+      },
+
+      renderCuesHistory() {
+        const list = document.getElementById("sandbox-cues-history");
+        list.innerHTML = "";
+        this.cuesHistory.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "p-1.5 rounded bg-tactical-900 border border-tactical-800 flex justify-between items-center";
+          row.innerHTML = `
+            <span class="text-amber-300 font-bold">[${item.cue}]</span>
+            <span class="text-[10px] px-1 rounded bg-tactical-950 text-slate-400">+${item.drs.toFixed(1)} DRS</span>
+          `;
+          list.appendChild(row);
+        });
+      },
+
+      updateDRSMeter() {
+        const display = document.getElementById("sandbox-drs-display");
+        const fill = document.getElementById("sandbox-drs-meter-fill");
+        if (display) display.innerText = `${this.totalDRS.toFixed(1)} / 11.0`;
+        const pct = Math.min(100, (this.totalDRS / 20.0) * 100);
+        if (fill) fill.style.width = `${pct}%`;
+      },
+
+      exportVideo() {
+        showTacticalToast("Recording CCTV Video Stream (.webm)...", "purple");
+        const canvas = document.getElementById("sandbox-video-canvas");
+        const stream = canvas.captureStream(30);
+        const recordedChunks = [];
+
+        try {
+          const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+          recorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+          recorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: "video/webm" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = `interrogation_${this.currentPersona}_cctv.webm`;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }, 100);
+            showTacticalToast("CCTV video exported successfully!", "success");
+          };
+
+          recorder.start();
+          this.videoPlayer.replay();
+          setTimeout(() => {
+            if (recorder.state === "recording") recorder.stop();
+          }, (this.videoPlayer.totalDuration * 1000) + 300);
+        } catch (e) {
+          showTacticalToast("MediaRecorder not supported in this browser.", "error");
+        }
+      },
+
+      async generateSessionReport() {
+        const modal = document.getElementById("bau-modal");
+        const body = document.getElementById("bau-modal-content");
+        modal.classList.remove("hidden");
+        body.innerHTML = `<span class="animate-pulse text-emerald-400">Compiling Official FBI BAU Forensic Interrogation Debrief...</span>`;
+
+        const persona = this.personas[this.currentPersona];
+        const prompt = `Synthesize an official behavioral debrief for this interrogation:
+Subject: ${persona.name}
+Case: ${persona.case}
+Total Accumulated DRS: ${this.totalDRS.toFixed(1)} (Critical threshold is 11.0)
+Logged tells: ${this.cuesHistory.map(c => c.cue).join("; ") || "None"}
+
+Provide:
+1. EXECUTIVE DECEPTION VERDICT (Threshold Analysis)
+2. MICRO-ANATOMY OF DETECTED CUES
+3. UNMET PSYCHOLOGICAL NEEDS (Hughes Needs Map)
+4. RECOMMENDED NEXT COVERT OPERATIONAL MOVES`;
+
+        try {
+          const rep = await GeminiService.generateText(prompt, "You are a Senior Profiler at the FBI Behavioral Analysis Unit.");
+          body.innerText = rep;
+          AudioSynth.playXPChime();
+        } catch (e) {
+          body.innerText = "Report generation failed.";
+        }
+      }
+    };
+
+    const DeceptionBlitz = {
+      videoPlayer: null,
+      currentIndex: 0,
+      activeChecklist: [],
+      scenarios: [
+        {
+          id: "CASE #704-B",
+          title: "Corporate CFO Embezzlement Audit",
+          question: "Did you authorize the second wire transfer of $240,000 to the offshore account on May 14th?",
+          transcript: "Look... [hesitates, pitch jumps upward] I have served this company honorably for twelve years. Would someone who dedicated their life to this firm do that? [clears throat, rubs back of neck while legs wrap tightly around chair legs].",
+          cues: [
+            { symbol: "Hes", name: "Hesitancy", drs: 4.0 },
+            { symbol: "Rip", name: "Rise in Pitch", drs: 4.0 },
+            { symbol: "Bon", name: "Back of Neck Rub", drs: 2.5 },
+            { symbol: "Bi", name: "Binding (Leg wrap)", drs: 2.0 },
+            { symbol: "NA", name: "Non-Answer Counter", drs: 4.0 }
+          ],
+          isDeceptive: true
+        }
+      ],
+
+      init() {
+        this.videoPlayer = new CCTVVideoPlayer(
+          "deception-video-canvas",
+          "deception-cctv-action-indicator",
+          "deception-cctv-subtitles",
+          "deception-video-timer"
+        );
+
+        this.loadScenario(0);
+
+        document.getElementById("next-deception-scenario").addEventListener("click", () => {
+          this.currentIndex = (this.currentIndex + 1) % this.scenarios.length;
+          this.loadScenario(this.currentIndex);
+        });
+
+        document.getElementById("ai-forge-deception-btn").addEventListener("click", () => this.forgeAIScenario());
+        document.getElementById("deception-send-turn-btn").addEventListener("click", () => this.executeProbeTurn());
+        document.getElementById("deception-video-replay-btn").addEventListener("click", () => this.videoPlayer.replay());
+        document.getElementById("deception-replay-audio-btn").addEventListener("click", () => this.videoPlayer.replay());
+
+        // Setup STT Mic
+        const micBtn = document.getElementById("deception-mic-btn");
+        const micLabel = document.getElementById("deception-mic-label");
+        const input = document.getElementById("deception-user-query-input");
+
+        const rec = createSpeechRecognition(
+          (text) => {
+            input.value = text;
+            showTacticalToast(`Voice captured: "${text}"`, "success");
+            this.executeProbeTurn();
+          },
+          () => {
+            micLabel.innerText = "Listening...";
+            micBtn.classList.replace("bg-tactical-800", "bg-rose-700");
+          },
+          () => {
+            micLabel.innerText = "Speak";
+            micBtn.classList.replace("bg-rose-700", "bg-tactical-800");
+          }
+        );
+
+        micBtn.addEventListener("click", () => {
+          if (!rec) { showTacticalToast("Speech recognition unavailable.", "warning"); return; }
+          try { rec.start(); } catch (e) { console.debug("Mic error", e); }
+        });
+
+        // Verdict buttons
+        document.querySelectorAll(".deception-verdict-btn").forEach(btn => {
+          btn.addEventListener("click", (e) => this.evaluateVerdict(e.currentTarget.dataset.verdict));
+        });
+
+        // Grounded Dossier Search
+        document.getElementById("ai-grounded-search-btn").addEventListener("click", () => {
+          document.getElementById("grounded-sources-panel").classList.toggle("hidden");
+        });
+        document.getElementById("close-grounded-panel").addEventListener("click", () => {
+          document.getElementById("grounded-sources-panel").classList.add("hidden");
+        });
+        document.getElementById("grounded-exec-search-btn").addEventListener("click", () => {
+          const q = document.getElementById("grounded-custom-query").value.trim();
+          this.searchGrounded(q || "corporate fraud CFO deposition transcript body language");
+        });
+      },
+
+      async loadScenario(idx) {
+        const sc = this.scenarios[idx];
+        document.getElementById("case-id").innerText = sc.id;
+        document.getElementById("case-title").innerText = sc.title;
+        document.getElementById("case-question").innerText = `"${sc.question}"`;
+        document.getElementById("case-transcript").innerText = sc.transcript;
+
+        // Parse bracketed tells
+        const regex = /\[(.*?)\]/g;
+        let actions = [];
+        let match;
+        while ((match = regex.exec(sc.transcript)) !== null) {
+          actions.push({ actionText: match[1].trim(), cueSymbol: "Bon" });
+        }
+        if (actions.length === 0) actions.push({ actionText: "Maintains sitting posture", cueSymbol: "St" });
+
+        // Synthesize voice using Gemini 3.1 Flash TTS
+        const cleanText = sc.transcript.replace(/\[.*?\]/g, " ").trim();
+        const voiceObj = await speakSuspectAnswer(sc.transcript, sc.isDeceptive ? "Fenrir" : "Puck");
+
+        // Always generate and play video of answer
+        this.videoPlayer.load({
+          cleanText: cleanText,
+          actions: actions,
+          audio: voiceObj.audio
+        });
+        this.videoPlayer.play();
+        voiceObj.play();
+
+        // Populate checklist
+        const list = document.getElementById("interactive-element-tally-list");
+        list.innerHTML = "";
+        this.activeChecklist = sc.cues.map(c => ({ ...c, checked: false }));
+
+        this.activeChecklist.forEach((item, i) => {
+          const row = document.createElement("div");
+          row.className = "flex items-center justify-between p-2 rounded bg-tactical-950 border border-tactical-700 cursor-pointer hover:border-amber-500/50";
+          row.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <input type="checkbox" id="blitz-chk-${i}" class="w-3.5 h-3.5 text-amber-500 rounded bg-tactical-800 border-tactical-600">
+              <label for="blitz-chk-${i}" class="text-xs font-mono text-slate-200 cursor-pointer">
+                <strong>[${item.symbol}]</strong> ${item.name}
+              </label>
+            </div>
+            <span class="font-mono text-xs font-bold text-amber-400">+${item.drs.toFixed(1)}</span>
+          `;
+          row.querySelector("input").addEventListener("change", (e) => {
+            this.activeChecklist[i].checked = e.target.checked;
+            this.recalculateScore();
+            AudioSynth.playClick();
+          });
+          list.appendChild(row);
+        });
+
+        document.getElementById("deception-result-banner").className = "hidden p-2.5 rounded font-mono text-xs";
+        this.recalculateScore();
+      },
+
+      recalculateScore() {
+        let total = 0;
+        this.activeChecklist.forEach(c => { if (c.checked) total += c.drs; });
+        document.getElementById("drs-tally-badge").innerText = `${total.toFixed(1)} / 11.0`;
+      },
+
+      evaluateVerdict(verdict) {
+        const sc = this.scenarios[this.currentIndex];
+        const banner = document.getElementById("deception-result-banner");
+        banner.classList.remove("hidden");
+
+        const isCorrect = (verdict === "deceptive" && sc.isDeceptive) || (verdict === "truth" && !sc.isDeceptive);
+        if (isCorrect) {
+          AudioSynth.playXPChime();
+          XPEngine.awardXP("deceptionBlitz", 25);
+          banner.className = "p-2.5 rounded bg-emerald-950/90 border border-emerald-500 text-emerald-200 font-mono text-xs";
+          banner.innerHTML = `<span class="font-bold">✓ ACCURATE VERDICT (+25 XP):</span> Correctly scored against the 11.0 Deception Rating Scale threshold.`;
+        } else {
+          AudioSynth.playWarningAlert();
+          banner.className = "p-2.5 rounded bg-rose-950/90 border border-rose-500 text-rose-200 font-mono text-xs";
+          banner.innerHTML = `<span class="font-bold">✗ MISCALCULATED VERDICT:</span> Review the BTOE cue point weights for this turn.`;
+        }
+      },
+
+      async executeProbeTurn() {
+        const input = document.getElementById("deception-user-query-input");
+        const query = input.value.trim();
+        if (!query) return;
+
+        input.value = "";
+        showTacticalToast("Probing suspect turn...", "purple");
+
+        const prompt = `You are a suspect being questioned in an interrogation. Question: "${query}". Respond defensively in 2 sentences. Include 2-3 BTOE behaviors in brackets (e.g. [pitch jumps], [fingers touch nose], [feet withdraw under chair]).`;
+        try {
+          const ans = await GeminiService.generateText(prompt, "You are a master criminal suspect trying to conceal guilt.");
+          this.scenarios.push({
+            id: `PROBE-${Date.now().toString().slice(-4)}`,
+            title: `Custom Turn: ${query.slice(0, 24)}`,
+            question: query,
+            transcript: ans,
+            cues: [
+              { symbol: "Rip", name: "Rise in Pitch", drs: 4.0 },
+              { symbol: "Fns", name: "Finger-to-Nose", drs: 4.0 },
+              { symbol: "Fw", name: "Foot Withdraw", drs: 3.5 }
+            ],
+            isDeceptive: true
+          });
+          this.currentIndex = this.scenarios.length - 1;
+          this.loadScenario(this.currentIndex);
+        } catch (e) {
+          showTacticalToast("Probe failed.", "error");
+        }
+      },
+
+      async forgeAIScenario() {
+        showTacticalToast("Gemini 3 Flash forging live interrogation turn...", "purple");
+        const prompt = "Generate a novel interrogation scenario. Include 3 BTOE nonverbal cues in brackets, DRS values (1.0 to 4.0), determine whether DRS >= 11.0.";
+        const schema = {
+          type: "OBJECT",
+          properties: {
+            id: { type: "STRING" },
+            title: { type: "STRING" },
+            question: { type: "STRING" },
+            transcript: { type: "STRING" },
+            cues: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  symbol: { type: "STRING" },
+                  name: { type: "STRING" },
+                  drs: { type: "NUMBER" }
+                },
+                required: ["symbol", "name", "drs"]
+              }
+            },
+            isDeceptive: { type: "BOOLEAN" }
+          },
+          required: ["id", "title", "question", "transcript", "cues", "isDeceptive"]
+        };
+
+        try {
+          const newSc = await GeminiService.generateStructuredJSON(prompt, "You are an expert profiler.", schema);
+          this.scenarios.push(newSc);
+          this.currentIndex = this.scenarios.length - 1;
+          this.loadScenario(this.currentIndex);
+          showTacticalToast(`Case Forged: ${newSc.id}`, "success");
+        } catch (e) {
+          showTacticalToast("AI Forge failed.", "error");
+        }
+      },
+
+      async searchGrounded(q) {
+        const resEl = document.getElementById("grounded-search-results");
+        resEl.innerHTML = `<span class="animate-pulse text-blue-400">Searching Google Grounded archives...</span>`;
+        try {
+          const { text, sources } = await GeminiService.searchGroundedCases(q);
+          resEl.innerHTML = `<div class="whitespace-pre-wrap">${text}</div>`;
+          document.getElementById("grounded-docking-actions").classList.remove("hidden");
+        } catch (e) {
+          resEl.innerHTML = `<span class="text-rose-400">Search grounding failed.</span>`;
+        }
+      }
+    };
+
+    const EllipsisGame = {
+      videoPlayer: null,
+      currentIndex: 0,
+      challenges: [
+        {
+          raw: "Have you seen my car keys anywhere? [fidgets with collar] I am completely certain that I left them on the counter.",
+          stripped: "[Have you] Seen my car keys? [I'm] Sure I left them on the counter.",
+          actions: [{ actionText: "Fidgets with shirt collar and glances sideways", cueSymbol: "Bon" }]
+        }
+      ],
+
+      init() {
+        this.videoPlayer = new CCTVVideoPlayer(
+          "ellipsis-video-canvas",
+          "ellipsis-cctv-action-indicator",
+          "ellipsis-cctv-subtitles",
+          "ellipsis-video-timer"
+        );
+
+        this.loadChallenge(0);
+
+        document.getElementById("ai-generate-ellipsis-phrase-btn").addEventListener("click", () => this.generateNextWitness());
+        document.getElementById("ellipsis-send-query-btn").addEventListener("click", () => this.interrogateWitness());
+        document.getElementById("ellipsis-video-replay-btn").addEventListener("click", () => this.videoPlayer.replay());
+        document.getElementById("strip-custom-ellipsis-btn").addEventListener("click", () => this.stripCustomInput());
+
+        // Setup STT Mic
+        const micBtn = document.getElementById("ellipsis-mic-btn");
+        const micLabel = document.getElementById("ellipsis-mic-label");
+        const input = document.getElementById("ellipsis-interrogate-input");
+
+        const rec = createSpeechRecognition(
+          (text) => {
+            input.value = text;
+            showTacticalToast(`Voice query: "${text}"`, "success");
+            this.interrogateWitness();
+          },
+          () => {
+            micLabel.innerText = "Listening...";
+            micBtn.classList.replace("bg-tactical-800", "bg-rose-700");
+          },
+          () => {
+            micLabel.innerText = "Speak";
+            micBtn.classList.replace("bg-rose-700", "bg-tactical-800");
+          }
+        );
+
+        micBtn.addEventListener("click", () => {
+          if (!rec) { showTacticalToast("Speech recognition unavailable.", "warning"); return; }
+          try { rec.start(); } catch (e) { console.debug("Mic error", e); }
+        });
+      },
+
+      async loadChallenge(idx) {
+        const item = this.challenges[idx];
+        document.getElementById("ellipsis-raw-sentence").innerText = `"${item.raw}"`;
+        document.getElementById("ellipsis-stripped-sentence").innerText = `"${item.stripped}"`;
+
+        const cleanText = item.raw.replace(/\[.*?\]/g, " ").trim();
+        const voiceObj = await speakSuspectAnswer(cleanText, "Puck");
+
+        // Always generate and play video of witness response
+        this.videoPlayer.load({
+          cleanText: cleanText,
+          actions: item.actions || [{ actionText: "Fidgets with collar", cueSymbol: "Bon" }],
+          audio: voiceObj.audio
+        });
+        this.videoPlayer.play();
+        voiceObj.play();
+      },
+
+      async interrogateWitness() {
+        const input = document.getElementById("ellipsis-interrogate-input");
+        const q = input.value.trim();
+        if (!q) return;
+
+        input.value = "";
+        showTacticalToast("Witness formulating bloated deposition...", "purple");
+
+        const prompt = `A witness is being questioned: "${q}". Write a bloated, verbose conversational reply in 2 sentences with unnecessary pronouns/auxiliaries and 1 bracketed tell like [clears throat, touches back of neck]. Then write the stripped Ellipsis version dropping deadweight. Return JSON.`;
+        const schema = {
+          type: "OBJECT",
+          properties: {
+            raw: { type: "STRING" },
+            stripped: { type: "STRING" }
+          },
+          required: ["raw", "stripped"]
+        };
+
+        try {
+          const res = await GeminiService.generateStructuredJSON(prompt, "You are a master linguistic profiler.", schema);
+          this.challenges.push({
+            raw: res.raw,
+            stripped: res.stripped,
+            actions: [{ actionText: "Touches nape of neck while speaking", cueSymbol: "Bon" }]
+          });
+          this.currentIndex = this.challenges.length - 1;
+          this.loadChallenge(this.currentIndex);
+          XPEngine.awardXP("ellipsisChallenge", 20);
+          showTacticalToast("Turn synthesized with voice + CCTV video! (+20 XP)", "success");
+        } catch (e) {
+          showTacticalToast("Witness turn failed.", "error");
+        }
+      },
+
+      async generateNextWitness() {
+        this.interrogateWitness();
+      },
+
+      async stripCustomInput() {
+        const input = document.getElementById("custom-ellipsis-input");
+        const val = input.value.trim();
+        if (!val) return;
+
+        const out = document.getElementById("custom-ellipsis-output");
+        out.classList.remove("hidden");
+        out.innerHTML = `<span class="animate-pulse text-cyan-400">Applying situational and textual ellipsis compression...</span>`;
+
+        const prompt = `Apply Chase Hughes linguistic ellipsis to strip conversational padding from: "${val}". Drop redundant subject pronouns, auxiliary verbs, and filler while keeping meaning instantly clear.`;
+        try {
+          const res = await GeminiService.generateText(prompt, "You are a linguistic compression specialist.");
+          out.innerHTML = `
+            <div class="font-bold text-emerald-400 mb-1">STRIPPED ELLIPSIS OUTPUT:</div>
+            <p class="text-slate-100 text-sm">"${res}"</p>
+          `;
+          AudioSynth.playXPChime();
+          XPEngine.awardXP("ellipsisChallenge", 15);
+        } catch (e) {
+          out.innerHTML = `<span class="text-rose-400">Compression failed.</span>`;
+        }
+      }
+    };
+
+    const IronChefGame = {
+      videoPlayer: null,
+      cardDeck1: [
+        { code: "St", title: "Steeple Hands [St]", desc: "Pyramid hand gesture. High confidence anchor." },
+        { code: "Bon", title: "Back of Neck Rub [Bon]", desc: "Reaching to nape. Pacifying vagal calming response." },
+        { code: "Bi", title: "Leg Binding [Bi]", desc: "Feet locked around chair legs. Restraint tell." }
+      ],
+      cardDeck2: [
+        { code: "[op]", title: "Operator Anchor [op]", desc: "Touch chest when describing positive qualities." },
+        { code: "[sp]", title: "Subject Marker [sp]", desc: "Gesture to suspect when describing open feelings." },
+        { code: "Double Bind", title: "Double Bind Question", desc: "Two options satisfying same objective." }
+      ],
+      cardDeck3: [
+        { code: "Lvl 4", title: "Inspirational Composure", desc: "Calm polite command; relaxed gaze; unconcerned by validation." },
+        { code: "Lvl 5", title: "Contagious Composure", desc: "Quiet rock in high stress; inspires trust automatically." }
+      ],
+
+      init() {
+        this.videoPlayer = new CCTVVideoPlayer(
+          "ironchef-video-canvas",
+          "ironchef-cctv-action-indicator",
+          "ironchef-cctv-subtitles",
+          "ironchef-video-timer"
+        );
+
+        this.drawCards();
+
+        document.getElementById("ironchef-draw-btn").addEventListener("click", () => this.drawCards());
+        document.getElementById("ironchef-send-turn-btn").addEventListener("click", () => this.executeTurnSparring());
+        document.getElementById("ironchef-video-replay-btn").addEventListener("click", () => this.videoPlayer.replay());
+
+        // Setup STT Mic
+        const micBtn = document.getElementById("ironchef-mic-btn");
+        const micLabel = document.getElementById("ironchef-mic-label");
+        const input = document.getElementById("ironchef-user-query");
+
+        const rec = createSpeechRecognition(
+          (text) => {
+            input.value = text;
+            showTacticalToast(`Sparring probe spoken: "${text}"`, "success");
+            this.executeTurnSparring();
+          },
+          () => {
+            micLabel.innerText = "Listening...";
+            micBtn.classList.replace("bg-tactical-800", "bg-rose-700");
+          },
+          () => {
+            micLabel.innerText = "Speak";
+            micBtn.classList.replace("bg-rose-700", "bg-tactical-800");
+          }
+        );
+
+        micBtn.addEventListener("click", () => {
+          if (!rec) { showTacticalToast("Speech recognition unavailable.", "warning"); return; }
+          try { rec.start(); } catch (e) { console.debug("Mic error", e); }
+        });
+
+        // Initialize video player
+        this.videoPlayer.load({
+          cleanText: "Why are you questioning my integrity like this?",
+          actions: [{ actionText: "Arms cross into defensive barrier while lip compresses", cueSymbol: "Bar" }]
+        });
+      },
+
+      drawCards() {
+        const c1 = this.cardDeck1[Math.floor(Math.random() * this.cardDeck1.length)];
+        const c2 = this.cardDeck2[Math.floor(Math.random() * this.cardDeck2.length)];
+        const c3 = this.cardDeck3[Math.floor(Math.random() * this.cardDeck3.length)];
+
+        document.getElementById("ic-card1-title").innerText = c1.title;
+        document.getElementById("ic-card1-desc").innerText = c1.desc;
+
+        document.getElementById("ic-card2-title").innerText = c2.title;
+        document.getElementById("ic-card2-desc").innerText = c2.desc;
+
+        document.getElementById("ic-card3-title").innerText = c3.title;
+        document.getElementById("ic-card3-desc").innerText = c3.desc;
+
+        AudioSynth.playClick();
+      },
+
+      async executeTurnSparring() {
+        const input = document.getElementById("ironchef-user-query");
+        const query = input.value.trim();
+        if (!query) return;
+
+        input.value = "";
+        showTacticalToast("Suspect responding to sparring probe...", "purple");
+
+        const c1 = document.getElementById("ic-card1-title").innerText;
+        const c2 = document.getElementById("ic-card2-title").innerText;
+        const c3 = document.getElementById("ic-card3-title").innerText;
+
+        const prompt = `The investigator executes an operational interrogation probe: "${query}" while testing cards: [${c1}, ${c2}, ${c3}]. As the suspect, respond in character defensively with 2-3 sentences and include 1-2 bracketed nonverbal tells like [arms cross tightly, lip compresses]. Then critique the operator's Hughes Authority level (1-5). Return JSON.`;
+        const schema = {
+          type: "OBJECT",
+          properties: {
+            suspectReply: { type: "STRING" },
+            critique: { type: "STRING" },
+            hughesScore: { type: "NUMBER" }
+          },
+          required: ["suspectReply", "critique", "hughesScore"]
+        };
+
+        try {
+          const res = await GeminiService.generateStructuredJSON(prompt, "You are a tactical interrogation instructor and suspect.", schema);
+
+          document.getElementById("ironchef-suspect-transcript").innerText = res.suspectReply;
+          const evalEl = document.getElementById("ironchef-eval-result");
+          evalEl.classList.remove("hidden");
+          evalEl.innerHTML = `
+            <div class="font-bold text-purple-400 mb-1">HUGHES AUTHORITY CRITIQUE (LEVEL ${res.hughesScore}/5):</div>
+            <p class="text-slate-200">${res.critique}</p>
+          `;
+
+          // Synthesize voice
+          const cleanText = res.suspectReply.replace(/\[.*?\]/g, " ").trim();
+          const voiceObj = await speakSuspectAnswer(cleanText, "Fenrir");
+
+          // Always generate and play video of suspect reaction
+          this.videoPlayer.load({
+            cleanText: cleanText,
+            actions: [{ actionText: "Arms cross tightly into defensive barrier while lips compress", cueSymbol: "Bar" }],
+            audio: voiceObj.audio
+          });
+          this.videoPlayer.play();
+          voiceObj.play();
+
+          AudioSynth.playXPChime();
+          XPEngine.awardXP("ironChef", 25);
+          showTacticalToast("Sparring turn completed with CCTV video! (+25 XP)", "success");
+        } catch (e) {
+          showTacticalToast("Sparring turn failed.", "error");
+        }
+      }
+    };
+
+    function renderBTOEMatrix(filter = "all") {
+      const grid = document.getElementById("btoe-matrix-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      const filtered = BTOE_DATA.filter(item => {
+        if (filter === "all") return true;
+        if (filter === "critical") return item.drs >= 4.0;
+        return item.category === filter;
+      });
+
+      filtered.forEach(item => {
+        let border = "border-cyan-500/40";
+        let badgeBg = "bg-cyan-950 text-cyan-300";
+        if (item.drs >= 4.0) {
+          border = "border-rose-500/60";
+          badgeBg = "bg-rose-950 text-rose-300";
+        } else if (item.type === "Open") {
+          border = "border-emerald-500/40";
+          badgeBg = "bg-emerald-950 text-emerald-300";
+        }
+
+        const cell = document.createElement("div");
+        cell.className = `p-2 rounded-lg bg-tactical-950 border ${border} flex flex-col justify-between h-20 cursor-pointer hover:scale-105 transition shadow`;
+        cell.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-mono font-black text-xs text-slate-100">${item.symbol}</span>
+            <span class="text-[9px] font-mono px-1 rounded ${badgeBg}">${item.drs.toFixed(1)}</span>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] font-bold text-slate-200 truncate">${item.name}</div>
+            <div class="text-[8px] font-mono text-slate-500">${item.region}</div>
+          </div>
+        `;
+
+        cell.addEventListener("click", () => {
+          showTacticalToast(`[${item.symbol}] ${item.name}: ${item.desc} (DRS ${item.drs.toFixed(1)})`, item.drs >= 4.0 ? "warning" : "info");
+        });
+
+        grid.appendChild(cell);
+      });
+    }
+
+    const VisionScanner = {
+      init() {
+        const fileInput = document.getElementById("vision-file-input");
+        const previewImg = document.getElementById("vision-preview-img");
+        const promptText = document.getElementById("vision-upload-prompt");
+
+        fileInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              previewImg.src = event.target.result;
+              previewImg.classList.remove("hidden");
+              promptText.classList.add("hidden");
+              showTacticalToast("Interrogation still loaded.", "info");
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        document.querySelectorAll(".vision-preset-btn").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const preset = e.currentTarget.dataset.preset;
+            // Procedural preset placeholder canvas
+            const canvas = document.createElement("canvas");
+            canvas.width = 640; canvas.height = 360;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#0a1017"; ctx.fillRect(0, 0, 640, 360);
+            ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 3;
+            ctx.strokeRect(270, 110, 100, 140);
+            ctx.fillStyle = "#fbbf24"; ctx.font = "bold 14px monospace";
+            ctx.fillText(`PRESET: ${preset.toUpperCase()} STANCE`, 30, 40);
+            previewImg.src = canvas.toDataURL("image/png");
+            previewImg.classList.remove("hidden");
+            promptText.classList.add("hidden");
+            showTacticalToast(`Loaded ${preset} preset.`, "info");
+          });
+        });
+
+        document.getElementById("run-vision-analysis-btn").addEventListener("click", () => this.runAnalysis());
+      },
+
+      async runAnalysis() {
+        const previewImg = document.getElementById("vision-preview-img");
+        if (!previewImg.src || previewImg.classList.contains("hidden")) {
+          showTacticalToast("Please upload an interrogation frame or select a preset.", "warning");
+          return;
+        }
+
+        const out = document.getElementById("vision-analysis-output");
+        out.innerHTML = `<span class="animate-pulse text-cyan-400">Scanning image with Gemini 3 Flash Multimodal Vision...</span>`;
+        showTacticalToast("Analyzing nonverbal posture telemetry...", "purple");
+
+        const prompt = "Act as an expert behavioral profiler using Chase Hughes' Behavioral Table of Elements (BTOE). Analyze this interrogation still: 1. Identify nonverbal head, arm, torso, and lower-body gestures. 2. Match to BTOE codes (e.g. Bon, Bar, St, Bi). 3. Estimate total Deception Rating Score (DRS) and Hughes Authority posture level (1-5). 4. Provide tactical next conversational move.";
+        try {
+          const base64Data = previewImg.src.split(",")[1];
+          const mimeType = previewImg.src.split(";")[0].split(":")[1] || "image/png";
+
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GeminiService.apiKey}`;
+          const payload = {
+            contents: [{
+              role: "user",
+              parts: [
+                { text: prompt },
+                { inlineData: { mimeType: mimeType, data: base64Data } }
+              ]
+            }]
+          };
+
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) throw new Error("Vision error");
+          const data = await response.json();
+          const analysis = data.candidates?.[0]?.content?.parts?.[0]?.text || "No cues resolved.";
+          out.innerHTML = `<div class="whitespace-pre-wrap font-mono text-xs text-slate-200">${analysis}</div>`;
+          AudioSynth.playXPChime();
+          XPEngine.awardXP("deceptionBlitz", 25);
+          showTacticalToast("Vision scan complete! (+25 XP)", "success");
+        } catch (e) {
+          out.innerHTML = `
+            <div class="text-amber-300 font-bold mb-1">LOCAL FORENSIC TELEMETRY FALLBACK:</div>
+            <p>1. Posture displays acute upper torso tension with defensive arm barrier [Bar, DRS 3.0].<br>
+            2. Lower extremity indicates flight readiness [Fw, DRS 3.5].<br>
+            3. Estimated Cluster DRS: 6.5 / 11.0.<br>
+            4. Recommended Maneuver: Deploy an [op] gestural anchor paired with calming diaphragmatic pacing.</p>
+          `;
+        }
+      }
+    };
+
+    const TerminalEngine = {
+      init() {
+        const modal = document.getElementById("terminal-modal");
+        document.getElementById("open-terminal-btn").addEventListener("click", () => {
+          modal.classList.remove("hidden");
+          AudioSynth.playClick();
+        });
+
+        document.getElementById("close-terminal-btn").addEventListener("click", () => modal.classList.add("hidden"));
+
+        const send = async () => {
+          const input = document.getElementById("terminal-prompt-input");
+          const query = input.value.trim();
+          if (!query) return;
+
+          input.value = "";
+          const body = document.getElementById("terminal-chat-body");
+          body.innerHTML += `<div class="text-cyan-300 font-bold mt-1">&gt; ${query}</div>`;
+          body.scrollTop = body.scrollHeight;
+
+          try {
+            const reply = await GeminiService.generateText(query, "You are a master tactical behavioral profiler.");
+            body.innerHTML += `<div class="text-slate-200 whitespace-pre-wrap">${reply}</div>`;
+            body.scrollTop = body.scrollHeight;
+            AudioSynth.playClick();
+          } catch (e) {
+            body.innerHTML += `<div class="text-rose-400">&gt; Copilot transmission interrupted.</div>`;
+          }
+        };
+
+        document.getElementById("terminal-send-btn").addEventListener("click", send);
+        document.getElementById("terminal-prompt-input").addEventListener("keydown", (e) => {
+          if (e.key === "Enter") send();
+        });
+      }
+    };
+
+    function switchGameTab(targetTabId) {
+      document.querySelectorAll(".game-view-panel").forEach(p => p.classList.add("hidden"));
+      document.querySelectorAll(".nav-tab-btn").forEach(b => {
+        b.classList.remove("active", "bg-emerald-950", "text-emerald-300", "border-emerald-500/60");
+        b.classList.add("bg-tactical-850", "text-slate-400");
+      });
+
+      const activePanel = document.getElementById(targetTabId);
+      if (activePanel) activePanel.classList.remove("hidden");
+
+      const activeBtn = document.querySelector(`.nav-tab-btn[data-tab="${targetTabId}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add("active", "bg-emerald-950", "text-emerald-300", "border-emerald-500/60");
+        activeBtn.classList.remove("bg-tactical-850", "text-slate-400");
+      }
+      AudioSynth.playClick();
+    }
+
+    window.addEventListener("load", () => {
+      AudioSynth.init();
+      XPEngine.init();
+      SprintTimer.init();
+      LiveSandbox.init();
+      DeceptionBlitz.init();
+      EllipsisGame.init();
+      IronChefGame.init();
+      VisionScanner.init();
+      TerminalEngine.init();
+      renderBTOEMatrix("all");
+
+      // Set default tab explicitly to Live Interrogation Sandbox
+      switchGameTab("view-sandbox");
+
+      // Tab navigation listeners
+      document.querySelectorAll(".nav-tab-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => switchGameTab(e.currentTarget.dataset.tab));
+      });
+
+      // BTOE filter buttons
+      document.querySelectorAll(".btoe-filter-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          document.querySelectorAll(".btoe-filter-btn").forEach(b => {
+            b.classList.remove("active", "bg-emerald-950", "text-emerald-300", "border-emerald-500/60");
+            b.classList.add("bg-tactical-800", "text-slate-300");
+          });
+          e.currentTarget.classList.add("active", "bg-emerald-950", "text-emerald-300", "border-emerald-500/60");
+          renderBTOEMatrix(e.currentTarget.dataset.filter);
+          AudioSynth.playClick();
+        });
+      });
+
+      // Global Mute Toggle
+      document.getElementById("global-mute-btn").addEventListener("click", () => {
+        AudioSynth.muted = !AudioSynth.muted;
+        const icon = document.getElementById("global-mute-icon");
+        icon.className = AudioSynth.muted ? "fa-solid fa-volume-xmark text-rose-400" : "fa-solid fa-volume-high text-slate-300";
+        showTacticalToast(AudioSynth.muted ? "Audio Muted" : "Audio Active", "info");
+      });
+
+      // Modal listeners
+      document.getElementById("close-bau-modal-btn").addEventListener("click", () => {
+        document.getElementById("bau-modal").classList.add("hidden");
+      });
+      document.getElementById("copy-bau-btn").addEventListener("click", () => {
+        const text = document.getElementById("bau-modal-content").innerText;
+        document.execCommand("copy");
+        showTacticalToast("BAU Dossier copied to clipboard!", "success");
+      });
+    });
+  </script>
+</body>
+</html>
