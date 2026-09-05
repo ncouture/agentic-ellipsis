@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.log
+
+# Fully regenerable via `python -m app.scripts.run_ingestion`, and
+# chunks.jsonl/tier1_outline.md contain substantial verbatim extracted text
+# from the source PDFs (commercially sold, copyrighted material) -- not
+# something to bake into git history.
+index/
+
+.claude/
+.adk/
+.pytest_cache/
