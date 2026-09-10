@@ -19,10 +19,10 @@
     - [x] Add Mermaid component diagram of system topology
     - [x] Add Mermaid sequence diagram of turn lifecycle and hybrid query execution
     - [x] Document warmup caching strategy (`app.scripts.warmup`)
-- [ ] Task: Create `docs/pipeline.md` (Ingestion & Knowledge Pipeline)
-    - [ ] Document Marker-PDF parser integration and conversion pipeline
-    - [ ] Document table-to-prose transform, markdown chunking, and metadata enrichment
-    - [ ] Document index build steps and generated artifacts
+- [x] Task: Create `docs/pipeline.md` (Ingestion & Knowledge Pipeline) (e1ee6db)
+    - [x] Document Marker-PDF parser integration and conversion pipeline
+    - [x] Document table-to-prose transform, markdown chunking, and metadata enrichment
+    - [x] Document index build steps and generated artifacts
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Drills, Behavioral Scenarios & Cross-Link Verification
