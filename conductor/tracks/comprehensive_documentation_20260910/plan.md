@@ -10,7 +10,7 @@
     - [x] Document data ingestion execution (`app.scripts.run_ingestion`)
     - [x] Document running the ADK agent (`adk run app`, `adk web app`)
     - [x] Document latency benchmark checks and test execution (`pytest`)
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (433028a)
 
 ## Phase 2: Architecture & Ingestion Pipeline Documentation
 - [ ] Task: Create `docs/architecture.md` (System Architecture & Design)
