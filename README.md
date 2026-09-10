@@ -76,6 +76,28 @@ uv run pytest
 
 ---
 
+## Using the Project with `uv`
+
+Quick reference commands for common development, testing, and operational workflows using [`uv`](https://docs.astral.sh/uv/):
+
+| Task | Command | Description |
+|---|---|---|
+| **Environment Sync (Dev)** | `uv sync --all-groups` | Install all runtime and development dependencies in editable mode |
+| **Environment Sync (Prod)** | `uv sync` | Install runtime dependencies only without test/dev tools |
+| **Run Test Suite** | `uv run pytest` | Execute all unit and integration tests |
+| **Test Coverage** | `uv run pytest --cov=app` | Run pytest with module test coverage metrics |
+| **Code Quality / Linting** | `uv run ruff check` | Run fast linting across application and tests |
+| **Auto-formatting** | `uv run ruff format` | Format code according to project style standards |
+| **Run Document Ingestion** | `uv run python -m app.scripts.run_ingestion` | Parse PDFs in `data/` and rebuild `index/` stores |
+| **Check Retrieval Latency** | `uv run python -m app.scripts.latency_check` | Verify sub-50ms retrieval benchmark budget |
+| **Launch Agent (Terminal)** | `uv run adk run app` | Start interactive CLI session with ADK agent |
+| **Launch Agent (Web GUI)** | `uv run adk web app` | Launch ADK Web interface with voice/streaming support |
+| **Update Lockfile** | `uv lock` | Regenerate deterministic `uv.lock` |
+| **Add Runtime Dependency** | `uv add <package>` | Add and lock a new runtime dependency in `pyproject.toml` |
+| **Add Dev Dependency** | `uv add --dev <package>` | Add a development tool to `[dependency-groups]` |
+
+---
+
 ## Documentation
 
 Full technical documentation is available in the [`docs/`](docs/) directory:
