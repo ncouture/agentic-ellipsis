@@ -5,11 +5,11 @@
     - [x] Add executive overview and system purpose
     - [x] Map documentation structure and links to all guides
     - [x] Document core models and foundational data sources (BTOE, DRS, Authority manuals)
-- [ ] Task: Create `docs/getting-started.md` (Developer & Operator Guide)
-    - [ ] Document environment setup (Python 3.11+, virtualenv, API keys)
-    - [ ] Document data ingestion execution (`app.scripts.run_ingestion`)
-    - [ ] Document running the ADK agent (`adk run app`, `adk web app`)
-    - [ ] Document latency benchmark checks and test execution (`pytest`)
+- [x] Task: Create `docs/getting-started.md` (Developer & Operator Guide) (433028a)
+    - [x] Document environment setup (Python 3.11+, virtualenv, API keys)
+    - [x] Document data ingestion execution (`app.scripts.run_ingestion`)
+    - [x] Document running the ADK agent (`adk run app`, `adk web app`)
+    - [x] Document latency benchmark checks and test execution (`pytest`)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Architecture & Ingestion Pipeline Documentation
