@@ -14,9 +14,9 @@
 - [x] Task: Verify Full Test Suite with `uv run` (f37989d)
     - [x] Run `uv run pytest` across all existing tests (`tests/test_*.py`)
     - [x] Validate test discovery and import resolution under the editable package layout
-- [ ] Task: Remove Legacy `requirements.txt`
-    - [ ] Delete `requirements.txt`
-    - [ ] Verify no dangling scripts or tools depend directly on `requirements.txt`
+- [x] Task: Remove Legacy `requirements.txt` (dd9eb22)
+    - [x] Delete `requirements.txt`
+    - [x] Verify no dangling scripts or tools depend directly on `requirements.txt`
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Documentation & Tech Stack Alignment
