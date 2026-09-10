@@ -1,6 +1,0 @@
-google-adk
-marker-pdf
-chromadb
-rank-bm25
-google-genai
-pytest
