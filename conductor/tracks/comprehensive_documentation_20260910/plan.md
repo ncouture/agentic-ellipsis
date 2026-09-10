@@ -30,7 +30,7 @@
     - [x] Document all ADK agent tools (`start_sprint`, `reverse_roles`, `teach_interviewing_technique`, `start_whisper_drill`, `query_knowledge_base`)
     - [x] Document drill scenarios catalog from `app/agent/persona.py` (hidden truths, cover stories, difficulties)
     - [x] Document BTOE, DRS, and Authority Pillars coaching methodology
-- [ ] Task: Cross-Link Verification & Linting
-    - [ ] Verify relative links across all files in `docs/`
-    - [ ] Validate Mermaid syntax rendering
+- [x] Task: Cross-Link Verification & Linting
+    - [x] Verify relative links across all files in `docs/`
+    - [x] Validate Mermaid syntax rendering
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
