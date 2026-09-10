@@ -1,10 +1,10 @@
 # Implementation Plan: Manage Project Dependencies with `uv`
 
 ## Phase 1: Project Initialization & Dependency Definition
-- [ ] Task: Create `pyproject.toml` configuration
-    - [ ] Define project metadata (`name`, `version`, `requires-python = ">=3.11"`) and `hatchling` build backend
-    - [ ] Add runtime dependencies (`google-adk`, `marker-pdf`, `chromadb`, `rank-bm25`, `google-genai`)
-    - [ ] Define `dev` dependency group (`pytest`, `pytest-asyncio`, `pytest-cov`, `ruff`)
+- [x] Task: Create `pyproject.toml` configuration (e98d900)
+    - [x] Define project metadata (`name`, `version`, `requires-python = ">=3.11"`) and `hatchling` build backend
+    - [x] Add runtime dependencies (`google-adk`, `marker-pdf`, `chromadb`, `rank-bm25`, `google-genai`)
+    - [x] Define `dev` dependency group (`pytest`, `pytest-asyncio`, `pytest-cov`, `ruff`)
 - [ ] Task: Generate Lockfile and Verify Sync
     - [ ] Execute `uv lock` to create deterministic `uv.lock`
     - [ ] Execute `uv sync --all-groups` to verify hermetic dependency resolution and editable package installation
