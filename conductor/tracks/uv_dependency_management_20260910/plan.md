@@ -10,14 +10,14 @@
     - [x] Execute `uv sync --all-groups` to verify hermetic dependency resolution and editable package installation
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (b96f362)
 
-## Phase 2: Test Suite Verification & Legacy Clean-up
+## Phase 2: Test Suite Verification & Legacy Clean-up [checkpoint: dd9eb22]
 - [x] Task: Verify Full Test Suite with `uv run` (f37989d)
     - [x] Run `uv run pytest` across all existing tests (`tests/test_*.py`)
     - [x] Validate test discovery and import resolution under the editable package layout
 - [x] Task: Remove Legacy `requirements.txt` (dd9eb22)
     - [x] Delete `requirements.txt`
     - [x] Verify no dangling scripts or tools depend directly on `requirements.txt`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (dd9eb22)
 
 ## Phase 3: Documentation & Tech Stack Alignment
 - [ ] Task: Update Getting Started Guide (`docs/getting-started.md`)
