@@ -1,12 +1,14 @@
-# Agentic Ellipsis Documentation Hub
+# adk-ellipsis Documentation Hub
 
-Welcome to the **Agentic Ellipsis** technical documentation suite. Agentic Ellipsis is an interactive, voice-enabled behavioral profiling and interrogation drill trainer built with the **Google Agent Development Kit (ADK)** and **Gemini Live** (`gemini-3.1-flash-live-preview`).
+> **adk-ellipsis**: Voice-driven interrogation drill simulator used to train control of high-stakes conversations by relying on subconscious influence, identity alignment, and behavioral profiling.
+
+Welcome to the **adk-ellipsis** technical documentation suite. adk-ellipsis is an interactive, voice-enabled behavioral profiling and interrogation drill trainer built with the **Google Agent Development Kit (ADK)** and **Gemini Live** (`gemini-3.1-flash-live-preview`).
 
 ---
 
 ## Executive Overview & System Purpose
 
-Agentic Ellipsis simulates realistic, low-stakes human interactions (such as workplace policy discrepancies and administrative oversights) allowing operators, investigators, and analysts to practice and master behavioral profiling, elicitation techniques, and deception detection.
+adk-ellipsis simulates realistic, low-stakes human interactions (such as workplace policy discrepancies and administrative oversights) allowing operators, investigators, and analysts to practice and master behavioral profiling, elicitation techniques, and deception detection.
 
 The agent pairs sub-50ms hybrid retrieval over proprietary behavioral science manuals with conversational roleplay, real-time whisper coaching, and immediate post-drill debriefs.
 
