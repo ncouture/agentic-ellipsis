@@ -13,12 +13,12 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (433028a)
 
 ## Phase 2: Architecture & Ingestion Pipeline Documentation
-- [ ] Task: Create `docs/architecture.md` (System Architecture & Design)
-    - [ ] Document Google ADK orchestration and live streaming architecture
-    - [ ] Document ChromaDB dense vector & Rank-BM25 sparse lexical hybrid retrieval
-    - [ ] Add Mermaid component diagram of system topology
-    - [ ] Add Mermaid sequence diagram of turn lifecycle and hybrid query execution
-    - [ ] Document warmup caching strategy (`app.scripts.warmup`)
+- [x] Task: Create `docs/architecture.md` (System Architecture & Design) (71042a9)
+    - [x] Document Google ADK orchestration and live streaming architecture
+    - [x] Document ChromaDB dense vector & Rank-BM25 sparse lexical hybrid retrieval
+    - [x] Add Mermaid component diagram of system topology
+    - [x] Add Mermaid sequence diagram of turn lifecycle and hybrid query execution
+    - [x] Document warmup caching strategy (`app.scripts.warmup`)
 - [ ] Task: Create `docs/pipeline.md` (Ingestion & Knowledge Pipeline)
     - [ ] Document Marker-PDF parser integration and conversion pipeline
     - [ ] Document table-to-prose transform, markdown chunking, and metadata enrichment
