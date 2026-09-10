@@ -48,6 +48,9 @@ Core dependencies installed:
 
 ## 3. Ingestion & Index Building
 
+> [!NOTE]
+> **Copyright & Git Policy:** The source PDF manuals (`data/*.pdf`) and generated indices (`index/`) are commercial, copyrighted materials and are excluded from git version control via `.gitignore`. You must supply your own legitimate copies of these manuals in `data/` before running ingestion.
+
 Before running the agent, the source PDF manuals located in [`data/`](../data/) must be processed into chunks and indexed for hybrid retrieval:
 
 ```bash

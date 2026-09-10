@@ -4,6 +4,16 @@ This document details the end-to-end knowledge ingestion pipeline that converts 
 
 ---
 
+## Important: Copyright, Source Data & Git Policy
+
+The source reference PDFs (`data/*.pdf`) and generated index assets (`index/`) contain commercially published, copyrighted training manuals authored by Chase Hughes.
+
+- **Exclusion from Version Control:** Both `data/*.pdf` and `index/` are strictly excluded from git tracking via `.gitignore` to prevent distributing proprietary, copyrighted content in public repositories.
+- **Pipeline Preservation:** All ingestion logic (`app/ingest/`), validation routines, conversion algorithms, and documentation remain open and fully versioned within this codebase.
+- **Operator Requirement:** Operators and developers wishing to build or re-index the knowledge base must provide their own legitimately acquired copies of the training manuals inside the `data/` directory before running ingestion.
+
+---
+
 ## 1. Pipeline Overview
 
 The pipeline transforms unformatted PDF manuals into dual-indexed knowledge stores (dense vectors in ChromaDB and sparse tokens in BM25) through a multi-stage process:
