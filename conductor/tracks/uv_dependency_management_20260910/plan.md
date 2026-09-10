@@ -11,9 +11,9 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (b96f362)
 
 ## Phase 2: Test Suite Verification & Legacy Clean-up
-- [ ] Task: Verify Full Test Suite with `uv run`
-    - [ ] Run `uv run pytest` across all existing tests (`tests/test_*.py`)
-    - [ ] Validate test discovery and import resolution under the editable package layout
+- [x] Task: Verify Full Test Suite with `uv run` (f37989d)
+    - [x] Run `uv run pytest` across all existing tests (`tests/test_*.py`)
+    - [x] Validate test discovery and import resolution under the editable package layout
 - [ ] Task: Remove Legacy `requirements.txt`
     - [ ] Delete `requirements.txt`
     - [ ] Verify no dangling scripts or tools depend directly on `requirements.txt`
