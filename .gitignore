@@ -13,6 +13,7 @@ data/*.pdf
 
 .claude/
 .adk/
+.agents/
 .pytest_cache/
 .coverage
 htmlcov/
