@@ -20,9 +20,9 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (dd9eb22)
 
 ## Phase 3: Documentation & Tech Stack Alignment
-- [ ] Task: Update Getting Started Guide (`docs/getting-started.md`)
-    - [ ] Document `uv` prerequisites and installation
-    - [ ] Update quickstart steps to use `uv sync` and `uv run`
+- [x] Task: Update Getting Started Guide (`docs/getting-started.md`) (ddba672)
+    - [x] Document `uv` prerequisites and installation
+    - [x] Update quickstart steps to use `uv sync` and `uv run`
 - [ ] Task: Update Tech Stack Context (`conductor/tech-stack.md`)
     - [ ] Document `uv` as the official packaging and dependency management tool
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
