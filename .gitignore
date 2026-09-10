@@ -9,6 +9,7 @@ __pycache__/
 # from the source PDFs (commercially sold, copyrighted material) -- not
 # something to bake into git history.
 index/
+data/*.pdf
 
 .claude/
 .adk/
