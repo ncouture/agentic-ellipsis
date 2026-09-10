@@ -2,6 +2,7 @@
 
 ## Core Infrastructure
 - **Runtime:** Python 3.11+
+- **Packaging & Dependency Manager:** `uv` (`pyproject.toml` with `hatchling` build backend, deterministic `uv.lock`)
 - **Agent Orchestration:** Google ADK (`google-adk`)
 - **LLM / Foundation Model:** Gemini 3.1 Flash Live Preview (`gemini-3.1-flash-live-preview`) via Google GenAI SDK (`google-genai`) for low-latency bidirectional voice/text streaming.
 
