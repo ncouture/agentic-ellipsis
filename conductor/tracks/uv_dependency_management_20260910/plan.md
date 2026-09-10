@@ -1,6 +1,6 @@
 # Implementation Plan: Manage Project Dependencies with `uv`
 
-## Phase 1: Project Initialization & Dependency Definition
+## Phase 1: Project Initialization & Dependency Definition [checkpoint: b96f362]
 - [x] Task: Create `pyproject.toml` configuration (e98d900)
     - [x] Define project metadata (`name`, `version`, `requires-python = ">=3.11"`) and `hatchling` build backend
     - [x] Add runtime dependencies (`google-adk`, `marker-pdf`, `chromadb`, `rank-bm25`, `google-genai`)
@@ -8,7 +8,7 @@
 - [x] Task: Generate Lockfile and Verify Sync (b96f362)
     - [x] Execute `uv lock` to create deterministic `uv.lock`
     - [x] Execute `uv sync --all-groups` to verify hermetic dependency resolution and editable package installation
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (b96f362)
 
 ## Phase 2: Test Suite Verification & Legacy Clean-up
 - [ ] Task: Verify Full Test Suite with `uv run`
