@@ -23,7 +23,7 @@
     - [x] Document Marker-PDF parser integration and conversion pipeline
     - [x] Document table-to-prose transform, markdown chunking, and metadata enrichment
     - [x] Document index build steps and generated artifacts
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) (b5c1f96)
 
 ## Phase 3: Drills, Behavioral Scenarios & Cross-Link Verification
 - [ ] Task: Create `docs/drills-and-tools.md` (Agent Tools & Behavioral Drills)
