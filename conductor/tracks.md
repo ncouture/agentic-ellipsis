@@ -7,6 +7,6 @@
 
 ---
 
-- [ ] **Track: Manage Project Dependencies with `uv`**
+- [~] **Track: Manage Project Dependencies with `uv`**
   *Link: [conductor/tracks/uv_dependency_management_20260910/index.md](./tracks/uv_dependency_management_20260910/index.md)*
 
