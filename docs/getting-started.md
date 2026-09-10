@@ -7,6 +7,7 @@ This guide walks you through setting up your environment, ingesting behavioral m
 ## 1. Prerequisites
 
 - **Python 3.11+**
+- **uv:** Fast Python package and environment manager (`curl -LsSf https://astral.sh/uv/install.sh | sh` or via system package manager)
 - **Google GenAI / Gemini API Key:** A valid API key with access to `gemini-3.1-flash-live-preview` (for the live agent) and `text-embedding-004` (for dense retrieval embeddings).
 
 Set your API key in your environment:
@@ -25,24 +26,27 @@ Clone or navigate to the project directory:
 cd /path/to/agentic-ellipsis
 ```
 
-Create and activate a Python virtual environment:
+Install and synchronize dependencies using `uv`:
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+# Synchronize all runtime and development dependencies (installs adk-ellipsis in editable mode)
+uv sync --all-groups
 ```
 
-Install the dependencies:
+For production or minimal deployment environments without test dependencies:
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
-Core dependencies installed:
+Core dependencies managed via `pyproject.toml` and locked in `uv.lock`:
 - `google-adk`: Agent framework runtime
 - `google-genai`: Gemini Live and Embedding API SDK
 - `marker-pdf`: PDF to structured markdown parser
 - `chromadb`: Vector database for dense semantic embeddings
 - `rank-bm25`: BM25 lexical keyword search
-- `pytest`: Automated test runner
+
+Development and testing dependencies:
+- `pytest`, `pytest-asyncio`, `pytest-cov`: Automated testing and coverage suites
+- `ruff`: High-performance linter and code formatter
 
 ---
 
@@ -54,7 +58,7 @@ Core dependencies installed:
 Before running the agent, the source PDF manuals located in [`data/`](../data/) must be processed into chunks and indexed for hybrid retrieval:
 
 ```bash
-python -m app.scripts.run_ingestion
+uv run python -m app.scripts.run_ingestion
 ```
 
 ### What Happens During Ingestion:
@@ -76,35 +80,40 @@ Agentic Ellipsis runs on the **Google Agent Development Kit (ADK)** runtime.
 ### Web Interface
 To launch the interactive ADK Web GUI (supporting browser-based voice input and streaming output):
 ```bash
-adk web app
+uv run adk web app
 ```
 Then navigate to the local URL displayed in your console (typically `http://localhost:8000`).
 
 ### Terminal / Interactive CLI
 To launch directly in your terminal for text-based interaction:
 ```bash
-adk run app
+uv run adk run app
 ```
 
 ---
 
 ## 5. Running the Test Suite
 
-Run the full pytest test suite to ensure all unit and integration tests pass:
+Run the full pytest test suite using `uv run`:
 ```bash
-pytest
+uv run pytest
+```
+
+Run tests with code coverage:
+```bash
+uv run pytest --cov=app
 ```
 
 Run specific test modules:
 ```bash
 # Test agent tools and mock retrieval
-pytest tests/test_agent_tools.py
+uv run pytest tests/test_agent_tools.py
 
 # Test hybrid search fusion (Chroma + BM25)
-pytest tests/test_hybrid.py
+uv run pytest tests/test_hybrid.py
 
 # Test latency budgets and warmup verification
-pytest tests/test_latency_and_warmup.py
+uv run pytest tests/test_latency_and_warmup.py
 ```
 
 ---

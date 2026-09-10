@@ -43,12 +43,11 @@ Built on the **Google Agent Development Kit (ADK)** and **Gemini Live** (`gemini
 ---
 
 ## Quick Start
-
+ 
 ### 1. Installation
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# Synchronize virtual environment with all runtime and development dependencies
+uv sync --all-groups
 ```
 
 ### 2. Set API Key
@@ -58,21 +57,21 @@ export GEMINI_API_KEY="your-api-key"
 
 ### 3. Build Retrieval Index (if starting fresh)
 ```bash
-python -m app.scripts.run_ingestion
+uv run python -m app.scripts.run_ingestion
 ```
 
 ### 4. Run the Agent
 ```bash
 # Terminal CLI
-adk run app
+uv run adk run app
 
 # Web Interface
-adk web app
+uv run adk web app
 ```
 
 ### 5. Run Tests
 ```bash
-pytest
+uv run pytest
 ```
 
 ---
