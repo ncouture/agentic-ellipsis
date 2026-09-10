@@ -5,9 +5,9 @@
     - [x] Define project metadata (`name`, `version`, `requires-python = ">=3.11"`) and `hatchling` build backend
     - [x] Add runtime dependencies (`google-adk`, `marker-pdf`, `chromadb`, `rank-bm25`, `google-genai`)
     - [x] Define `dev` dependency group (`pytest`, `pytest-asyncio`, `pytest-cov`, `ruff`)
-- [ ] Task: Generate Lockfile and Verify Sync
-    - [ ] Execute `uv lock` to create deterministic `uv.lock`
-    - [ ] Execute `uv sync --all-groups` to verify hermetic dependency resolution and editable package installation
+- [x] Task: Generate Lockfile and Verify Sync (b96f362)
+    - [x] Execute `uv lock` to create deterministic `uv.lock`
+    - [x] Execute `uv sync --all-groups` to verify hermetic dependency resolution and editable package installation
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Test Suite Verification & Legacy Clean-up
