@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Behavioral Table of Elements - ADHD Operator Training Engine</title>
+  <title>Behavioral Table of Elements - Operator Training Engine</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons CDN -->
@@ -89,6 +89,21 @@
         linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     }
+    dialog#gemini-key-dialog {
+      margin: auto;
+      border: none;
+      padding: 0;
+      background: transparent;
+      max-width: 32rem;
+      width: calc(100% - 2rem);
+    }
+    dialog#gemini-key-dialog::backdrop {
+      background-color: rgba(6, 9, 14, 0.85);
+      backdrop-filter: blur(6px);
+    }
+    dialog#gemini-key-dialog[open] {
+      display: flex;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-tactical-950 text-slate-100 flex flex-col antialiased crt-grid">
@@ -104,7 +119,7 @@
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="font-mono font-bold text-xs sm:text-sm tracking-wider uppercase text-emerald-300">
-              ADHD Operator Live Interrogation Hub
+              Operator Live Interrogation Hub
             </h1>
             <span class="text-[10px] px-1.5 py-0.5 rounded bg-tactical-800 text-cyan-300 font-mono border border-cyan-700/60 font-bold">v4.1-GEMINI-3.1-TTS</span>
           </div>
@@ -148,8 +163,13 @@
           </div>
         </div>
 
-        <!-- Terminal Launcher & Mute Toggle -->
+        <!-- Gemini API Key, Terminal Launcher & Mute Toggle -->
         <div class="flex items-center space-x-1.5">
+          <button id="open-gemini-key-btn" class="px-2.5 py-1.5 bg-tactical-800 hover:bg-tactical-700 text-amber-300 border border-amber-600/60 rounded font-mono text-xs flex items-center space-x-1.5 transition shadow" title="Configure Google Gemini API Key">
+            <span id="hud-gemini-key-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <i class="fa-solid fa-key text-[10px]"></i>
+            <span id="hud-gemini-key-text" class="hidden sm:inline font-bold">SET API KEY</span>
+          </button>
           <button id="open-terminal-btn" class="px-2.5 py-1.5 bg-tactical-800 hover:bg-tactical-700 text-cyan-300 rounded border border-tactical-600 font-mono text-xs flex items-center space-x-1 transition" title="Open AI Operator Terminal">
             <i class="fa-solid fa-terminal"></i>
             <span class="hidden md:inline">COPILOT</span>
@@ -752,9 +772,150 @@
     </div>
   </div>
 
+  <!-- Gemini API Key Configuration Dialog (Modern <dialog> with closedby="any" and accessible form controls) -->
+  <dialog id="gemini-key-dialog" closedby="any" aria-labelledby="gemini-key-dialog-title" class="p-0 bg-transparent text-slate-100">
+    <div class="bg-tactical-900 border border-emerald-500/60 rounded-2xl overflow-hidden flex flex-col shadow-2xl w-full">
+      <div class="bg-tactical-950 px-5 py-3.5 border-b border-tactical-800 flex justify-between items-center">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-950 border border-emerald-500/60 flex items-center justify-center text-emerald-400 font-mono text-sm shadow">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <div>
+            <h2 id="gemini-key-dialog-title" class="font-mono font-bold text-xs sm:text-sm uppercase tracking-wider text-emerald-300">
+              Gemini API Key Configuration
+            </h2>
+            <span id="gemini-key-dialog-badge" class="text-[10px] font-mono text-slate-400">Google Generative Language API</span>
+          </div>
+        </div>
+        <button id="close-gemini-key-dialog-btn" type="button" class="text-slate-400 hover:text-white font-mono text-sm px-2 py-1 rounded hover:bg-tactical-800 transition" aria-label="Close dialog">✕</button>
+      </div>
+
+      <form id="gemini-key-form" method="dialog" class="p-5 flex flex-col gap-4 font-mono text-xs">
+        <p id="gemini-key-dialog-reason" class="text-xs text-slate-300 leading-relaxed bg-tactical-950/70 p-3 rounded-lg border border-tactical-800">
+          Enter your Google Gemini API key to activate real-time Gemini 3 Flash generation, Gemini 3.1 Flash expressive TTS, Multimodal Vision scanning, and Google Grounding.
+        </p>
+
+        <div class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-center">
+            <label for="gemini-api-key-input" class="text-slate-200 font-bold flex items-center space-x-1.5">
+              <span>Gemini API Key</span>
+              <span class="text-rose-400">*</span>
+            </label>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 underline text-[11px] flex items-center space-x-1" title="Get a free Gemini API key from Google AI Studio">
+              <span>Get Free Key</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </a>
+          </div>
+
+          <!-- Hidden username field for browser accessibility and autofill compliance -->
+          <input
+            type="text"
+            name="username"
+            value="Gemini API User"
+            autocomplete="username"
+            class="sr-only hidden"
+            tabindex="-1"
+            aria-hidden="true"
+          />
+          <div class="relative flex items-center">
+            <input
+              id="gemini-api-key-input"
+              name="gemini_api_key"
+              type="password"
+              autocomplete="current-password"
+              spellcheck="false"
+              placeholder="AIzaSy..."
+              class="w-full bg-tactical-950 border border-tactical-700 focus:border-emerald-400 rounded-lg px-3.5 py-2.5 pr-20 text-xs font-mono text-slate-100 placeholder:text-slate-600 focus:outline-none transition shadow-inner"
+            />
+            <div class="absolute right-1.5 flex items-center space-x-1">
+              <button
+                id="toggle-gemini-key-visibility-btn"
+                type="button"
+                class="p-1.5 text-slate-400 hover:text-slate-200 text-xs rounded hover:bg-tactical-800 transition"
+                aria-label="Toggle key visibility"
+                aria-pressed="false"
+                title="Toggle key visibility"
+              >
+                <i class="fa-solid fa-eye" id="toggle-key-eye-icon"></i>
+              </button>
+              <button
+                id="paste-gemini-key-btn"
+                type="button"
+                class="p-1.5 text-slate-400 hover:text-cyan-300 text-xs rounded hover:bg-tactical-800 transition"
+                aria-label="Paste from clipboard"
+                title="Paste from clipboard"
+              >
+                <i class="fa-solid fa-paste"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mt-1">
+            <label class="flex items-center space-x-2 cursor-pointer select-none">
+              <input type="checkbox" id="persist-gemini-key-checkbox" checked class="rounded bg-tactical-950 border-tactical-700 text-emerald-500 focus:ring-0">
+              <span>Remember key on this browser (localStorage)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Feedback & Validation Alert -->
+        <div id="gemini-key-test-feedback" class="hidden p-2.5 rounded-lg text-xs border leading-relaxed"></div>
+
+        <!-- Dialog Buttons -->
+        <div class="pt-3 border-t border-tactical-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center space-x-2">
+            <button
+              id="clear-gemini-key-btn"
+              type="button"
+              class="px-2.5 py-1.5 bg-tactical-800 hover:bg-rose-950/80 hover:text-rose-300 text-slate-400 border border-tactical-700 rounded transition"
+            >
+              Clear Key
+            </button>
+            <button
+              id="test-gemini-key-btn"
+              type="button"
+              class="px-3 py-1.5 bg-tactical-800 hover:bg-tactical-700 text-cyan-300 border border-cyan-800/60 rounded transition flex items-center space-x-1.5"
+            >
+              <i class="fa-solid fa-bolt text-[10px]"></i>
+              <span>Test Connection</span>
+            </button>
+          </div>
+
+          <div class="flex items-center space-x-2 ml-auto">
+            <button
+              id="cancel-gemini-key-btn"
+              type="button"
+              class="px-3 py-1.5 bg-tactical-800 hover:bg-tactical-700 text-slate-300 border border-tactical-700 rounded transition"
+            >
+              Cancel
+            </button>
+            <button
+              id="save-gemini-key-btn"
+              type="submit"
+              class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded shadow-lg transition flex items-center space-x-1.5"
+            >
+              <i class="fa-solid fa-check"></i>
+              <span>Save &amp; Activate</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     const BTOE_DATA = [
       { symbol: "Ht", name: "Head Tilt", category: "face", type: "Open", drs: 1.0, region: "Head", desc: "Tilt of head exposing carotid. Receptivity and interest." },
       { symbol: "Ef", name: "Brow Flash", category: "face", type: "Open", drs: 1.0, region: "Eyes", desc: "Rapid eyebrow raise (<0.2s). Universal greeting/validation indicator." },
@@ -959,9 +1120,421 @@
 
     const GeminiService = {
       apiKey: "",
+      _pendingPromptPromises: [],
+
+      init() {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlKey = urlParams.get("gemini_api_key") || urlParams.get("apiKey") || urlParams.get("key");
+          if (urlKey && urlKey.trim()) {
+            this.setApiKey(urlKey.trim(), true);
+          } else {
+            const saved = localStorage.getItem("btoe_gemini_api_key") || localStorage.getItem("gemini_api_key");
+            if (saved && saved.trim()) {
+              this.apiKey = saved.trim();
+            }
+          }
+        } catch (e) {
+          console.debug("Failed to read stored Gemini API key", e);
+        }
+
+        this.updateKeyStatusUI();
+        this.setupDialogListeners();
+      },
+
+      getApiKey() {
+        return this.apiKey;
+      },
+
+      hasApiKey() {
+        if (!this.apiKey || typeof this.apiKey !== "string") return false;
+        const trimmed = this.apiKey.trim();
+        if (trimmed.length < 15) return false;
+        if (trimmed === "AIzaSy..." || trimmed.toLowerCase().includes("dummy") || trimmed.toLowerCase().includes("your_api_key")) return false;
+        return true;
+      },
+
+      setApiKey(newKey, persist = true) {
+        let key = (newKey || "").trim();
+        key = key.replace(/^(?:export\s+)?GEMINI_API_KEY\s*=\s*/i, "").trim().replace(/^["']|["']$/g, "").trim();
+
+        this.apiKey = key;
+        try {
+          if (persist) {
+            if (this.hasApiKey()) {
+              localStorage.setItem("btoe_gemini_api_key", this.apiKey);
+              localStorage.setItem("gemini_api_key", this.apiKey);
+            } else {
+              localStorage.removeItem("btoe_gemini_api_key");
+              localStorage.removeItem("gemini_api_key");
+            }
+          }
+        } catch (e) {
+          console.debug("Failed to persist Gemini API key", e);
+        }
+        this.updateKeyStatusUI();
+        return this.apiKey;
+      },
+
+      clearApiKey() {
+        this.setApiKey("", true);
+        this.updateKeyStatusUI();
+        showTacticalToast("Gemini API key cleared from browser.", "info");
+      },
+
+      updateKeyStatusUI() {
+        const dot = document.getElementById("hud-gemini-key-dot");
+        const text = document.getElementById("hud-gemini-key-text");
+        const btn = document.getElementById("open-gemini-key-btn");
+        const badge = document.getElementById("gemini-key-dialog-badge");
+
+        if (!btn || !text || !dot) return;
+
+        if (this.hasApiKey()) {
+          const masked = this.apiKey.length > 8
+            ? `${this.apiKey.slice(0, 4)}...${this.apiKey.slice(-4)}`
+            : "ACTIVE";
+          dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+          text.innerText = `KEY: ${masked}`;
+          btn.className = "px-2.5 py-1.5 bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-500/60 rounded font-mono text-xs flex items-center space-x-1.5 transition shadow";
+          btn.title = `Gemini API Key active (${masked}) - Click to manage or change`;
+          if (badge) badge.innerText = `Status: Active (${masked})`;
+        } else {
+          dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+          text.innerText = "SET API KEY";
+          btn.className = "px-2.5 py-1.5 bg-amber-950/30 hover:bg-amber-900/50 text-amber-300 border border-amber-600/60 rounded font-mono text-xs flex items-center space-x-1.5 transition shadow";
+          btn.title = "Gemini API Key not configured - Click to enter your key";
+          if (badge) badge.innerText = "Status: Unconfigured (Required for AI turns)";
+        }
+      },
+
+      async ensureApiKey(reason = "Enter your Google Gemini API key to activate live interrogation responses, TTS voice synthesis, and vision analysis.") {
+        if (this.hasApiKey()) {
+          return this.apiKey;
+        }
+        return await this.promptForApiKey(reason);
+      },
+
+      promptForApiKey(reason = "Enter your Google Gemini API key to activate live interrogation responses, TTS voice synthesis, and vision analysis.") {
+        const dialog = document.getElementById("gemini-key-dialog");
+        const reasonEl = document.getElementById("gemini-key-dialog-reason");
+        const inputEl = document.getElementById("gemini-api-key-input");
+        const feedbackEl = document.getElementById("gemini-key-test-feedback");
+
+        if (reasonEl && reason) reasonEl.innerText = reason;
+        if (inputEl) inputEl.value = this.apiKey || "";
+
+        return new Promise((resolve, reject) => {
+          this._pendingPromptPromises.push({ resolve, reject });
+
+          if (dialog) {
+            if (!dialog.open) {
+              if (typeof dialog.showModal === "function") {
+                dialog.showModal();
+              } else {
+                dialog.setAttribute("open", "");
+              }
+            }
+            if (inputEl) {
+              setTimeout(() => {
+                inputEl.focus();
+                inputEl.select();
+              }, 50);
+            }
+          } else {
+            const entered = window.prompt(reason, this.apiKey || "");
+            if (entered && entered.trim()) {
+              this.setApiKey(entered.trim(), true);
+              resolve(this.apiKey);
+            } else if (this.hasApiKey()) {
+              resolve(this.apiKey);
+            } else {
+              reject(new Error("Gemini API key is required."));
+            }
+          }
+        });
+      },
+
+      _resolvePromptPromises(key) {
+        const promises = [...this._pendingPromptPromises];
+        this._pendingPromptPromises = [];
+        promises.forEach(p => p.resolve(key));
+      },
+
+      _rejectPromptPromises(err) {
+        const promises = [...this._pendingPromptPromises];
+        this._pendingPromptPromises = [];
+        promises.forEach(p => p.reject(err || new Error("Gemini API key prompt dismissed.")));
+      },
+
+      setupDialogListeners() {
+        const dialog = document.getElementById("gemini-key-dialog");
+        if (!dialog) return;
+
+        const openBtn = document.getElementById("open-gemini-key-btn");
+        const closeBtn = document.getElementById("close-gemini-key-dialog-btn");
+        const cancelBtn = document.getElementById("cancel-gemini-key-btn");
+        const saveBtn = document.getElementById("save-gemini-key-btn");
+        const clearBtn = document.getElementById("clear-gemini-key-btn");
+        const testBtn = document.getElementById("test-gemini-key-btn");
+        const input = document.getElementById("gemini-api-key-input");
+        const toggleVisibilityBtn = document.getElementById("toggle-gemini-key-visibility-btn");
+        const pasteBtn = document.getElementById("paste-gemini-key-btn");
+        const persistCheckbox = document.getElementById("persist-gemini-key-checkbox");
+        const feedbackEl = document.getElementById("gemini-key-test-feedback");
+
+        if (openBtn) {
+          openBtn.addEventListener("click", () => {
+            this.promptForApiKey("Enter your Gemini API key below to configure or update your Google Generative AI integration.").catch(() => {});
+            AudioSynth.playClick();
+          });
+        }
+
+        const handleCloseOrCancel = () => {
+          dialog.close();
+          if (this.hasApiKey()) {
+            this._resolvePromptPromises(this.apiKey);
+          } else {
+            this._rejectPromptPromises(new Error("Gemini API key required."));
+          }
+        };
+
+        if (closeBtn) closeBtn.addEventListener("click", handleCloseOrCancel);
+        if (cancelBtn) cancelBtn.addEventListener("click", handleCloseOrCancel);
+
+        dialog.addEventListener("close", () => {
+          if (this.hasApiKey()) {
+            this._resolvePromptPromises(this.apiKey);
+          } else {
+            this._rejectPromptPromises(new Error("Gemini API key required."));
+          }
+        });
+
+        if (!('closedBy' in HTMLDialogElement.prototype)) {
+          dialog.addEventListener("click", (event) => {
+            if (event.target !== dialog) return;
+            const rect = dialog.getBoundingClientRect();
+            const isInside = (
+              rect.top <= event.clientY &&
+              event.clientY <= rect.top + rect.height &&
+              rect.left <= event.clientX &&
+              event.clientX <= rect.left + rect.width
+            );
+            if (!isInside) {
+              handleCloseOrCancel();
+            }
+          });
+        }
+
+        const handleSave = () => {
+          let val = input.value.trim();
+          val = val.replace(/^(?:export\s+)?GEMINI_API_KEY\s*=\s*/i, "").trim().replace(/^["']|["']$/g, "").trim();
+
+          if (!val || val === "AIzaSy..." || val.length < 15) {
+            if (feedbackEl) {
+              feedbackEl.className = "p-2.5 rounded-lg text-xs border border-rose-500/60 bg-rose-950/60 text-rose-300 font-mono";
+              feedbackEl.innerText = "Please enter a valid Gemini API key (e.g. AIzaSy... from Google AI Studio).";
+            }
+            input.focus();
+            return;
+          }
+
+          const shouldPersist = persistCheckbox ? persistCheckbox.checked : true;
+          this.setApiKey(val, shouldPersist);
+          dialog.close();
+          this._resolvePromptPromises(this.apiKey);
+          AudioSynth.playXPChime();
+          XPEngine.awardXP("apiKeyConfigured", 10);
+          showTacticalToast("Gemini API Key activated (+10 XP)!", "success");
+        };
+
+        if (saveBtn) saveBtn.addEventListener("click", handleSave);
+
+        const form = document.getElementById("gemini-key-form");
+        if (form) {
+          form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            handleSave();
+          });
+        }
+
+        if (input) {
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.isComposing) {
+              e.preventDefault();
+              handleSave();
+            }
+          });
+        }
+
+        if (toggleVisibilityBtn && input) {
+          toggleVisibilityBtn.addEventListener("click", () => {
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            toggleVisibilityBtn.setAttribute("aria-pressed", isPassword ? "true" : "false");
+            const eyeIcon = document.getElementById("toggle-key-eye-icon");
+            if (eyeIcon) {
+              eyeIcon.className = isPassword ? "fa-solid fa-eye-slash text-cyan-300" : "fa-solid fa-eye text-slate-400";
+            }
+          });
+        }
+
+        if (pasteBtn && input) {
+          pasteBtn.addEventListener("click", async () => {
+            try {
+              if (navigator.clipboard && navigator.clipboard.readText) {
+                const text = await navigator.clipboard.readText();
+                if (text && text.trim()) {
+                  input.value = text.trim();
+                  showTacticalToast("Key pasted from clipboard", "info");
+                  input.focus();
+                }
+              } else {
+                input.focus();
+                input.select();
+                document.execCommand("paste");
+              }
+            } catch (err) {
+              showTacticalToast("Clipboard access denied. Please paste manually.", "warning");
+              input.focus();
+            }
+          });
+        }
+
+        if (clearBtn) {
+          clearBtn.addEventListener("click", () => {
+            if (input) input.value = "";
+            this.clearApiKey();
+            if (feedbackEl) {
+              feedbackEl.className = "p-2.5 rounded-lg text-xs border border-amber-500/60 bg-amber-950/60 text-amber-300 font-mono";
+              feedbackEl.innerText = "Key cleared. Enter a new key or cancel.";
+            }
+          });
+        }
+
+        if (testBtn) {
+          testBtn.addEventListener("click", async () => {
+            const candidate = (input.value || "").trim();
+            if (!candidate) {
+              if (feedbackEl) {
+                feedbackEl.className = "p-2.5 rounded-lg text-xs border border-rose-500/60 bg-rose-950/60 text-rose-300 font-mono";
+                feedbackEl.innerText = "Please enter an API key to test.";
+              }
+              return;
+            }
+
+            testBtn.disabled = true;
+            testBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[10px]"></i> <span>Testing...</span>`;
+            if (feedbackEl) {
+              feedbackEl.className = "p-2.5 rounded-lg text-xs border border-cyan-500/60 bg-cyan-950/60 text-cyan-300 font-mono animate-pulse";
+              feedbackEl.innerText = "Connecting to Gemini API...";
+            }
+
+            const result = await this.testConnection(candidate);
+            testBtn.disabled = false;
+            testBtn.innerHTML = `<i class="fa-solid fa-bolt text-[10px]"></i> <span>Test Connection</span>`;
+
+            if (result.success) {
+              if (feedbackEl) {
+                feedbackEl.className = "p-2.5 rounded-lg text-xs border border-emerald-500/60 bg-emerald-950/80 text-emerald-300 font-mono";
+                feedbackEl.innerHTML = `✓ Connection Verified! Google Gemini API responded in ${result.latency}ms.`;
+              }
+              AudioSynth.playXPChime();
+            } else {
+              if (feedbackEl) {
+                feedbackEl.className = "p-2.5 rounded-lg text-xs border border-rose-500/60 bg-rose-950/80 text-rose-300 font-mono";
+                feedbackEl.innerHTML = `✗ Connection Failed: ${escapeHtml(result.error)}`;
+              }
+              AudioSynth.playClick();
+            }
+          });
+        }
+      },
+
+      async _extractErrorMessage(response, defaultPrefix = "Gemini API Error") {
+        let errorDetail = "";
+        try {
+          const clone = response.clone ? response.clone() : response;
+          const data = await clone.json();
+          if (data?.error?.message) {
+            errorDetail = data.error.message;
+          } else if (typeof data === "string") {
+            errorDetail = data;
+          }
+        } catch (_) {
+          try {
+            const clone = response.clone ? response.clone() : response;
+            errorDetail = await clone.text();
+          } catch (_) {}
+        }
+
+        const statusInfo = `HTTP ${response.status}${response.statusText ? ` (${response.statusText})` : ""}`;
+        if (errorDetail) {
+          return `${defaultPrefix}: ${errorDetail} [${statusInfo}]`;
+        }
+        return `${defaultPrefix}: Request failed with ${statusInfo}`;
+      },
+
+      handleKeyRejection(errorMsg) {
+        const feedbackEl = document.getElementById("gemini-key-test-feedback");
+        if (feedbackEl) {
+          feedbackEl.className = "p-2.5 rounded-lg text-xs border border-rose-500/60 bg-rose-950/80 text-rose-300 font-mono";
+          feedbackEl.innerHTML = `<div class="font-bold mb-1">✗ Google Gemini API Rejected Key:</div><div class="break-words">${escapeHtml(errorMsg)}</div><div class="mt-1.5 text-[11px] text-slate-300">Please enter a valid API key below from Google AI Studio.</div>`;
+        }
+        this.promptForApiKey("Google Gemini API rejected the current key. Please enter a valid key to proceed:").catch(() => {});
+      },
+
+      async testConnection(testKey) {
+        const candidateKey = (testKey !== undefined && testKey !== null ? testKey : this.apiKey) || "";
+        const cleanedKey = candidateKey.trim().replace(/^(?:export\s+)?GEMINI_API_KEY\s*=\s*/i, "").trim().replace(/^["']|["']$/g, "").trim();
+        if (!cleanedKey || cleanedKey === "AIzaSy..." || cleanedKey.length < 15) {
+          return { success: false, error: "Key format invalid. Please paste your actual Gemini API key from Google AI Studio." };
+        }
+
+        const start = Date.now();
+        try {
+          const testModel = "gemini-3-flash-preview";
+          let url = `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${cleanedKey}`;
+          const bodyPayload = JSON.stringify({
+            contents: [{ parts: [{ text: "ping" }] }],
+            generationConfig: { maxOutputTokens: 5 }
+          });
+          let res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: bodyPayload
+          });
+
+          if (!res.ok && (res.status === 404 || res.status === 503)) {
+            const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${cleanedKey}`;
+            const fallbackRes = await fetch(fallbackUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: bodyPayload
+            });
+            if (fallbackRes.ok) {
+              res = fallbackRes;
+            }
+          }
+
+          if (!res.ok) {
+            const errorMsg = await this._extractErrorMessage(res, "Connection Test");
+            return { success: false, error: errorMsg };
+          }
+
+          const latency = Date.now() - start;
+          return { success: true, latency };
+        } catch (e) {
+          return { success: false, error: e.message || "Network error" };
+        }
+      },
 
       async generateText(prompt, systemInstruction = "") {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+        await this.ensureApiKey();
+        const primaryModel = "gemini-3-flash-preview";
+        const fallbackModel = "gemini-flash-latest";
+
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/${primaryModel}:generateContent?key=${this.apiKey}`;
         const payload = {
           contents: [{ parts: [{ text: prompt }] }]
         };
@@ -969,19 +1542,43 @@
           payload.systemInstruction = { parts: [{ text: systemInstruction }] };
         }
 
-        const response = await fetch(url, {
+        let response = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(`Gemini Text Error: ${response.statusText}`);
+        // Dynamic fallback to gemini-flash-latest if gemini-3-flash-preview is not found (404) or unavailable (503)
+        if (!response.ok && (response.status === 404 || response.status === 503)) {
+          const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${fallbackModel}:generateContent?key=${this.apiKey}`;
+          const fallbackResp = await fetch(fallbackUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (fallbackResp.ok) {
+            response = fallbackResp;
+          }
+        }
+
+        if (!response.ok) {
+          const errorMsg = await this._extractErrorMessage(response, "Gemini Text Error");
+          if (response.status === 400 || response.status === 401 || response.status === 403) {
+            showTacticalToast("Gemini API key rejected or invalid. Please update your key.", "error");
+            this.handleKeyRejection(errorMsg);
+          }
+          throw new Error(errorMsg);
+        }
         const data = await response.json();
         return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
       },
 
       async generateStructuredJSON(prompt, systemInstruction, schema) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+        await this.ensureApiKey();
+        const primaryModel = "gemini-3-flash-preview";
+        const fallbackModel = "gemini-flash-latest";
+
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/${primaryModel}:generateContent?key=${this.apiKey}`;
         const payload = {
           contents: [{ parts: [{ text: prompt }] }],
           systemInstruction: { parts: [{ text: systemInstruction }] },
@@ -991,13 +1588,32 @@
           }
         };
 
-        const response = await fetch(url, {
+        let response = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(`Gemini JSON Error: ${response.statusText}`);
+        if (!response.ok && (response.status === 404 || response.status === 503)) {
+          const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${fallbackModel}:generateContent?key=${this.apiKey}`;
+          const fallbackResp = await fetch(fallbackUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (fallbackResp.ok) {
+            response = fallbackResp;
+          }
+        }
+
+        if (!response.ok) {
+          const errorMsg = await this._extractErrorMessage(response, "Gemini JSON Error");
+          if (response.status === 400 || response.status === 401 || response.status === 403) {
+            showTacticalToast("Gemini API key rejected or invalid. Please update your key.", "error");
+            this.handleKeyRejection(errorMsg);
+          }
+          throw new Error(errorMsg);
+        }
         const data = await response.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
         return JSON.parse(text);
@@ -1008,7 +1624,7 @@
        * Supports native steerable prompt styling and expressive audio tags ([clearing throat], [hesitantly], [with rising pitch]).
        */
       async generateTTS(text, voiceName = "Fenrir") {
-        // Preprocess dialogue: convert vocal tells into expressive tags while stripping physical stage directions
+        await this.ensureApiKey();
         const expressiveScript = formatScriptForTTS(text);
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${this.apiKey}`;
@@ -1040,7 +1656,14 @@
           });
         }
 
-        if (!response.ok) throw new Error(`TTS Error: ${response.statusText}`);
+        if (!response.ok) {
+          const errorMsg = await this._extractErrorMessage(response, "TTS Error");
+          if (response.status === 400 || response.status === 401 || response.status === 403) {
+            showTacticalToast("Gemini API key rejected or invalid for TTS.", "error");
+            this.handleKeyRejection(errorMsg);
+          }
+          throw new Error(errorMsg);
+        }
         const data = await response.json();
         const part = data.candidates?.[0]?.content?.parts?.[0];
         const audioData = part?.inlineData?.data;
@@ -1057,6 +1680,7 @@
       },
 
       async searchGroundedCases(query) {
+        await this.ensureApiKey();
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
         const prompt = `Research verified real-world legal depositions or high-stakes interrogations for: "${query}". Provide a summary, an authentic Q&A transcript with bracketed nonverbal tells, and BTOE DRS scoring.`;
         
@@ -1071,7 +1695,14 @@
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(`Grounding Error: ${response.statusText}`);
+        if (!response.ok) {
+          const errorMsg = await this._extractErrorMessage(response, "Grounding Error");
+          if (response.status === 400 || response.status === 401 || response.status === 403) {
+            showTacticalToast("Gemini API key rejected or invalid for Grounding.", "error");
+            this.handleKeyRejection(errorMsg);
+          }
+          throw new Error(errorMsg);
+        }
         const data = await response.json();
         const candidate = data.candidates?.[0];
         const text = candidate?.content?.parts?.[0]?.text || "No dossier retrieved.";
@@ -1084,6 +1715,37 @@
         }
 
         return { text, sources };
+      },
+
+      async analyzeVision(prompt, base64Data, mimeType = "image/png") {
+        await this.ensureApiKey();
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${this.apiKey}`;
+        const payload = {
+          contents: [{
+            role: "user",
+            parts: [
+              { text: prompt },
+              { inlineData: { mimeType: mimeType, data: base64Data } }
+            ]
+          }]
+        };
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errorMsg = await this._extractErrorMessage(response, "Gemini Vision Error");
+          if (response.status === 400 || response.status === 401 || response.status === 403) {
+            showTacticalToast("Gemini API key rejected or invalid for Vision scan.", "error");
+            this.handleKeyRejection(errorMsg);
+          }
+          throw new Error(errorMsg);
+        }
+        const data = await response.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "No cues resolved.";
       }
     };
 
@@ -1925,7 +2587,26 @@
           XPEngine.awardXP("sandboxInterrogation", 15);
         } catch (err) {
           console.error(err);
-          feed.innerHTML += `<div class="p-3 bg-rose-950/50 border border-rose-500 rounded text-rose-300">Interrogation transmission interrupted.</div>`;
+          const isKeyErr = err.message.toLowerCase().includes("api key") || err.message.toLowerCase().includes("key required") || err.message.toLowerCase().includes("400") || err.message.toLowerCase().includes("401") || err.message.toLowerCase().includes("403");
+          feed.innerHTML += `
+            <div class="p-3 bg-rose-950/60 border border-rose-500/80 rounded-lg text-rose-200 font-mono text-xs flex flex-col gap-2">
+              <div class="font-bold flex items-center space-x-2 text-rose-300">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                <span>Interrogation transmission interrupted</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">${escapeHtml(err.message || "Failed to communicate with Gemini API.")}</p>
+              ${isKeyErr ? `
+                <div class="pt-1.5 border-t border-rose-900/60 flex items-center justify-between">
+                  <span class="text-[10px] text-amber-300">Valid Gemini API key required</span>
+                  <button type="button" onclick="GeminiService.promptForApiKey('Enter your Google Gemini API key to activate live interrogation responses.').catch(()=>{})" class="px-2.5 py-1 rounded bg-amber-900/80 hover:bg-amber-800 text-amber-200 border border-amber-600/60 text-[10px] font-bold transition flex items-center space-x-1">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Configure API Key</span>
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+          feed.scrollTop = feed.scrollHeight;
         } finally {
           sendBtn.disabled = false;
           sendBtn.innerText = "Ask ➔";
@@ -2013,7 +2694,7 @@ Provide:
           body.innerText = rep;
           AudioSynth.playXPChime();
         } catch (e) {
-          body.innerText = "Report generation failed.";
+          body.innerText = "Report generation failed: " + e.message;
         }
       }
     };
@@ -2211,7 +2892,7 @@ Provide:
           this.currentIndex = this.scenarios.length - 1;
           this.loadScenario(this.currentIndex);
         } catch (e) {
-          showTacticalToast("Probe failed.", "error");
+          showTacticalToast("Probe failed: " + e.message, "error");
         }
       },
 
@@ -2249,7 +2930,7 @@ Provide:
           this.loadScenario(this.currentIndex);
           showTacticalToast(`Case Forged: ${newSc.id}`, "success");
         } catch (e) {
-          showTacticalToast("AI Forge failed.", "error");
+          showTacticalToast("AI Forge failed: " + e.message, "error");
         }
       },
 
@@ -2261,7 +2942,7 @@ Provide:
           resEl.innerHTML = `<div class="whitespace-pre-wrap">${text}</div>`;
           document.getElementById("grounded-docking-actions").classList.remove("hidden");
         } catch (e) {
-          resEl.innerHTML = `<span class="text-rose-400">Search grounding failed.</span>`;
+          resEl.innerHTML = `<span class="text-rose-400">Search grounding failed: ${escapeHtml(e.message)}</span>`;
         }
       }
     };
@@ -2367,7 +3048,7 @@ Provide:
           XPEngine.awardXP("ellipsisChallenge", 20);
           showTacticalToast("Turn synthesized with voice + CCTV video! (+20 XP)", "success");
         } catch (e) {
-          showTacticalToast("Witness turn failed.", "error");
+          showTacticalToast("Witness turn failed: " + e.message, "error");
         }
       },
 
@@ -2394,7 +3075,7 @@ Provide:
           AudioSynth.playXPChime();
           XPEngine.awardXP("ellipsisChallenge", 15);
         } catch (e) {
-          out.innerHTML = `<span class="text-rose-400">Compression failed.</span>`;
+          out.innerHTML = `<span class="text-rose-400">Compression failed: ${escapeHtml(e.message)}</span>`;
         }
       }
     };
@@ -2531,7 +3212,8 @@ Provide:
           XPEngine.awardXP("ironChef", 25);
           showTacticalToast("Sparring turn completed with CCTV video! (+25 XP)", "success");
         } catch (e) {
-          showTacticalToast("Sparring turn failed.", "error");
+          console.error("Sparring turn failed:", e);
+          showTacticalToast("Sparring turn failed: " + (e.message || e), "error");
         }
       }
     };
@@ -2637,31 +3319,13 @@ Provide:
           const base64Data = previewImg.src.split(",")[1];
           const mimeType = previewImg.src.split(";")[0].split(":")[1] || "image/png";
 
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GeminiService.apiKey}`;
-          const payload = {
-            contents: [{
-              role: "user",
-              parts: [
-                { text: prompt },
-                { inlineData: { mimeType: mimeType, data: base64Data } }
-              ]
-            }]
-          };
-
-          const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) throw new Error("Vision error");
-          const data = await response.json();
-          const analysis = data.candidates?.[0]?.content?.parts?.[0]?.text || "No cues resolved.";
+          const analysis = await GeminiService.analyzeVision(prompt, base64Data, mimeType);
           out.innerHTML = `<div class="whitespace-pre-wrap font-mono text-xs text-slate-200">${analysis}</div>`;
           AudioSynth.playXPChime();
           XPEngine.awardXP("deceptionBlitz", 25);
           showTacticalToast("Vision scan complete! (+25 XP)", "success");
         } catch (e) {
+          console.warn("Vision scan fallback:", e);
           out.innerHTML = `
             <div class="text-amber-300 font-bold mb-1">LOCAL FORENSIC TELEMETRY FALLBACK:</div>
             <p>1. Posture displays acute upper torso tension with defensive arm barrier [Bar, DRS 3.0].<br>
@@ -2693,13 +3357,21 @@ Provide:
           body.innerHTML += `<div class="text-cyan-300 font-bold mt-1">&gt; ${query}</div>`;
           body.scrollTop = body.scrollHeight;
 
+          const qLower = query.toLowerCase();
+          if (qLower === "/key" || qLower === "key" || qLower === "apikey" || qLower === "api-key" || qLower.startsWith("/setkey") || qLower.startsWith("set key")) {
+            GeminiService.promptForApiKey("Configure your Google Gemini API Key:").catch(() => {});
+            body.innerHTML += `<div class="text-emerald-400">&gt; Opening Gemini API Key configuration prompt... Status: ${GeminiService.hasApiKey() ? 'ACTIVE' : 'NOT CONFIGURED'}</div>`;
+            body.scrollTop = body.scrollHeight;
+            return;
+          }
+
           try {
             const reply = await GeminiService.generateText(query, "You are a master tactical behavioral profiler.");
             body.innerHTML += `<div class="text-slate-200 whitespace-pre-wrap">${reply}</div>`;
             body.scrollTop = body.scrollHeight;
             AudioSynth.playClick();
           } catch (e) {
-            body.innerHTML += `<div class="text-rose-400">&gt; Copilot transmission interrupted.</div>`;
+            body.innerHTML += `<div class="text-rose-400">&gt; Copilot transmission interrupted. (${e.message})</div>`;
           }
         };
 
@@ -2729,6 +3401,7 @@ Provide:
     }
 
     window.addEventListener("load", () => {
+      GeminiService.init();
       AudioSynth.init();
       XPEngine.init();
       SprintTimer.init();
